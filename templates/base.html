@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroMiles - Sistem Informasi Loyalitas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus+SC&family=Monasans:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .hero-bg {
+            background-image: url('/static/images/background.png');
+            background-size: cover;
+            background-position: center;
+            height: 400px;
+        }
+        body { 
+            background-color: #f3f4f6;
+            font-family: 'Monasans', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6, .navbar-title {
+            font-family: 'Marcellus SC', serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <nav class="bg-[#0B2046] text-white sticky top-0 z-50">
+        <div class="max-w-full mx-auto px-8 flex justify-between h-16 items-center">
+            <div class="flex items-center gap-4">
+                <img src="/static/images/airplane-logos.png" alt="AeroMiles Logo" class="h-10 w-10">
+                <a href="/" class="navbar-title text-xl font-bold tracking-tight">AEROMILES</a>
+            </div>
+
+            <div class="flex gap-6 text-sm font-semibold items-center">
+                <a href="/dashboard" class="hover:text-blue-300 transition">DASHBOARD</a>
+                <a href="/staff/kelola-member" class="hover:text-blue-300 transition">KELOLA MEMBER</a>
+                <a href="/staff/kelola-klaim" class="hover:text-blue-300 transition">KELOLA KLAIM</a>
+                <a href="/staff/kelola-haji" class="hover:text-blue-300 transition">KELOLA HADIAH & PENYEDIA</a>
+                <a href="/staff/kelola-mitra" class="hover:text-blue-300 transition">KELOLA MITRA</a>
+                <a href="/staff/laporan" class="hover:text-blue-300 transition">LAPORAN TRANSAKSI</a>
+                <a href="/staff/pengaturan" class="hover:text-blue-300 transition">PENGATURAN PROFIL</a>
+                <div class="border-l border-blue-600 h-5"></div>
+                <a href="/logout" class="hover:text-blue-300 transition" title="Logout">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-bg flex items-center justify-center text-center text-white bg-cover bg-center" style="background-attachment: fixed;">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="relative z-10">
+            <h1 style="font-family: 'Plus Jakarta Sans', sans-serif;" class="text-5xl font-bold mb-3">Explore the World with AeroMiles</h1>
+            <p class="text-lg text-blue-100 opacity-90">Manage your miles, rewards, and travel identities in one place.</p>
+        </div>
+    </div>
+
+    <main class="flex-grow -mt-16 mb-12">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="bg-white rounded-xl shadow-2xl p-8 border border-gray-100">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white py-6 border-t">
+        <div class="text-center text-gray-400 text-xs">
+            &copy; 2026 Fakultas Ilmu Komputer Universitas Indonesia - Kelompok B1. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>

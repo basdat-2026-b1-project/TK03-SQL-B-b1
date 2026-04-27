@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.db import connection
 
 # ============================================================
 # DUMMY DATA - Simulasi database untuk TK03
@@ -54,6 +56,10 @@ DUMMY_TRANSAKSI_TERBARU = [
 # ============================================================
 
 
+def landing_page(request):
+    return render(request, 'base.html')
+
+
 def login_view(request):
     if request.session.get('role'):
         return redirect('accounts:dashboard')
@@ -64,12 +70,12 @@ def login_view(request):
 
         user = DUMMY_USERS.get(email)
         if user and user['password'] == password:
-            # Simpan session
+
             request.session['email'] = email
             request.session['role'] = user['role']
             request.session['salutation'] = user['salutation']
             request.session['nama'] = user['nama']
-            # Simpan semua data user ke session untuk kemudahan
+
             for k, v in user.items():
                 if k != 'password':
                     request.session[k] = v
@@ -203,3 +209,36 @@ def profil_view(request):
         'maskapai_choices': MASKAPAI_CHOICES,
         'country_codes': COUNTRY_CODES,
     })
+
+def update_profile(request):
+    if request.method == 'POST':
+        salutation = request.POST.get('salutation')
+        first_name = request.POST.get('first_mid_name')
+        last_name = request.POST.get('last_name')
+        country_code = request.POST.get('country_code')
+        phone = request.POST.get('mobile_number')
+        dob = request.POST.get('tanggal_lahir')
+        nationality = request.POST.get('kewarganegaraan')
+        
+        email = request.session.get('email')
+        
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                UPDATE PENGGUNA 
+                SET salutation = %s, first_mid_name = %s, last_name = %s, 
+                    country_code = %s, mobile_number = %s, tanggal_lahir = %s, kewarganegaraan = %s
+                WHERE email = %s;
+            """, [salutation, first_name, last_name, country_code, phone, dob, nationality, email])
+            
+        return redirect('accounts:profile')
+
+def profile_view(request):
+    if not request.session.get('email'):
+        return redirect('accounts:login')
+    
+    user = {
+        'email': request.session.get('email'),
+        'salutation': request.session.get('salutation', ''),
+    }
+    
+    return render(request, 'profile.html', {'user': user})
