@@ -10,4 +10,5 @@ urlpatterns = [
     path('redeem/', views.redeem_view, name='redeem'),
     path('package/', views.package_view, name='package'),
     path('info-tier/', views.info_tier_view, name='info_tier'),
+    path('dashboard/', views.dashboard, name='dashboard'),
 ]
