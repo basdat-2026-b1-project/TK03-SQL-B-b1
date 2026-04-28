@@ -3,7 +3,7 @@ from django.contrib import messages
 
 # ============================================================
 # DUMMY DATA - Simulasi database untuk TK03
-# Pada TK04 ini akan diganti dengan query ke PostgreSQL
+# di TK04 ini akan diganti dengan query ke PostgreSQL
 # ============================================================
 
 DUMMY_USERS = {
@@ -78,7 +78,7 @@ def login_view(request):
         else:
             messages.error(request, 'Email atau password salah. Silakan coba lagi.')
 
-    return render(request, 'accounts/login.html')
+    return render(request, 'login.html')
 
 
 def register_view(request):
@@ -96,23 +96,27 @@ def register_view(request):
     if request.method == 'POST':
         role = request.POST.get('role', 'member')
         email = request.POST.get('email', '').strip()
-        # Validasi sederhana untuk demo
+        password = request.POST.get('password', '')
+        
+        # validate
         if not email:
             messages.error(request, 'Email tidak boleh kosong.')
         elif email in DUMMY_USERS:
             messages.error(request, 'Email sudah terdaftar.')
         else:
+            # simpan data dummy baru ke dalam dictionary -> data selain dummy data
+            DUMMY_USERS[email] = {
+                'password': password,
+                'role': role,
+                'salutation': request.POST.get('salutation', ''),
+                'nama': request.POST.get('nama_depan', '') + ' ' + request.POST.get('nama_belakang', ''),
+            }
             messages.success(request, 'Akun berhasil dibuat! Silakan login.')
             return redirect('accounts:login')
 
-    return render(request, 'accounts/register.html', {
-        'maskapai_choices': [
-            ('GA', 'GA - Garuda Indonesia'),
-            ('QG', 'QG - Citilink'),
-            ('JT', 'JT - Lion Air'),
-            ('ID', 'ID - Batik Air'),
-            ('SQ', 'SQ - Singapore Airlines'),
-        ]
+    # dijalankan saat halaman pertama kali dibuka (GET request)
+    return render(request, 'register.html', {
+        'maskapai_choices': MASKAPAI_CHOICES
     })
 
 
@@ -139,7 +143,7 @@ def dashboard_view(request):
             'klaim_ditolak': 3,
         }
 
-    return render(request, 'accounts/dashboard.html', context)
+    return render(request, 'dashboard.html', context)
 
 
 def profil_view(request):
