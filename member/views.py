@@ -195,6 +195,33 @@ def redeem_view(request):
         'active_tab': active_tab,
     })
 
+# @login_required_member
+def dashboard(request):
+    # Nanti ganti dengan query DB beneran
+    context = {
+        # Info Pribadi
+        'nama': 'Nisrina Alya',
+        'email': 'nisrina.alya@ui.ac.id',
+        'telepon': '+62-8137-0998-516',
+        'kewarganegaraan': 'Indonesia',
+        'tanggal_lahir': '19-09-2006',
+
+        # Stat Cards
+        'nomor_member': 'MOO01',
+        'tier': 'GOLD',
+        'total_miles': 45000,
+        'award_miles': 32000,
+
+        # 5 Transaksi Terbaru
+        'transaksi': [
+            {'tipe': 'Transfer', 'tanggal': '2026-04-26 10:31:20', 'miles': -1000},
+            {'tipe': 'Redeem',   'tanggal': '2026-04-26 10:31:20', 'miles': -10000},
+            {'tipe': 'Package',  'tanggal': '2026-04-26 10:31:20', 'miles': +16000},
+            {'tipe': 'Package',  'tanggal': '2026-04-26 10:31:20', 'miles': +16000},
+            {'tipe': 'Redeem',   'tanggal': '2026-04-26 10:31:20', 'miles': -10000},
+        ],
+    }
+    return render(request, 'member/dashboard.html', context)
 
 @login_required_member
 def package_view(request):
