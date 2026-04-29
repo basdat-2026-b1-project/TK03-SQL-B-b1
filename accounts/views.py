@@ -1,3 +1,5 @@
+from urllib import request
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -113,9 +115,8 @@ def register_view(request):
             messages.success(request, 'Akun berhasil dibuat! Silakan login.')
             return redirect('accounts:login')
 
-    return render(request, 'register.html', {
-        'maskapai_choices': MASKAPAI_CHOICES
-    })
+    # dijalankan saat halaman pertama kali dibuka (GET request)
+    return render(request, 'accounts/register.html', {'maskapai_choices': MASKAPAI_CHOICES})
 
 
 def logout_view(request):
@@ -140,8 +141,7 @@ def dashboard_view(request):
             'klaim_disetujui': 12,
             'klaim_ditolak': 3,
         }
-
-    return render(request, 'dashboard.html', context)
+    return render(request, 'accounts/dashboard.html', context)
 
 
 def profile_view(request):
