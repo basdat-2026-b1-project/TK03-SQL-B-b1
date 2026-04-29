@@ -151,7 +151,7 @@ def dashboard(request):
     }
     return render(request, 'staff/dashboard.html', context)
 
-@login_required_staf
+# @login_required_staf
 def kelola_klaim_view(request):
     filter_status = request.GET.get('status', 'Semua')
     filter_maskapai = request.GET.get('maskapai', 'Semua')
