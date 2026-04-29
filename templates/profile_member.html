@@ -1,92 +1,104 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto">
-    <div class="bg-gray-300 py-6 mb-10 text-center">
-        <h2 class="text-4xl font-normal text-black tracking-wide">PENGATURAN PROFIL MEMBER</h2>
+<section class="min-h-[calc(100vh-104px)] bg-cover bg-center px-6 py-10"
+    style="background-image: linear-gradient(rgba(255,255,255,.65), rgba(255,255,255,.65)), url('{% static "images/dashboard-bg.jpg" %}');">
+
+    <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-semibold text-black tracking-wide uppercase">
+                Pengaturan Profil Member
+            </h2>
+        </div>
+
+        <div class=" mb-4"><a href="{% url 'member:identitas' %}"
+            class="inline-block mt-6 bg-[#0B2046] text-white px-6 py-3 rounded-lg hover:bg-blue-900 transition">
+            Kelola Dokumen Identitas
+        </a></div>
+
+        <div class="bg-white border border-[#C6C6C6] rounded-[15px] shadow-[0_4px_8px_rgba(0,0,0,.25)] p-10">
+            <form method="POST" action="/update-profile/">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div class="md:col-span-2 max-w-2xl">
+                        <label class="block mb-2 text-sm text-[#1E1E1E]">Email</label>
+                        <input type="email" value="{{ email }}" readonly placeholder="Value"
+                            class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0A1C3A]">
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm text-[#1E1E1E]">Nomor Member</label>
+                        <input type="text" value="{{ nomor_member }}" readonly placeholder="Value"
+                            class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0A1C3A]">
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm text-[#1E1E1E]">Tanggal Bergabung</label>
+                        <input type="text" value="{{ tanggal_bergabung }}" readonly placeholder="Value"
+                            class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0A1C3A]">
+                    </div>
+
+                    <div class="md:col-span-2 max-w-2xl">
+                        <label class="block mb-2 text-sm text-[#1E1E1E]">Salutation</label>
+                        <select name="salutation"
+                            class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#0A1C3A]">
+                            <option value="">Pilih opsi</option>
+                            <option value="Mr." {% if salutation == "Mr." %}selected{% endif %}>Mr.</option>
+                            <option value="Mrs." {% if salutation == "Mrs." %}selected{% endif %}>Mrs.</option>
+                            <option value="Ms." {% if salutation == "Ms." %}selected{% endif %}>Ms.</option>
+                            <option value="Dr." {% if salutation == "Dr." %}selected{% endif %}>Dr.</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm text-[#1E1E1E]">Nama Depan</label>
+                        <input type="text" name="first_mid_name" value="{{ first_mid_name }}" placeholder="Value"
+                            class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#0A1C3A]">
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm text-[#1E1E1E]">Nama Belakang</label>
+                        <input type="text" name="last_name" value="{{ last_name }}" placeholder="Value"
+                            class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#0A1C3A]">
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm text-[#1E1E1E]">Kewarganegaraan</label>
+                        <input type="text" name="kewarganegaraan" value="{{ kewarganegaraan }}" placeholder="Value"
+                            class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#0A1C3A]">
+                    </div>
+
+                    <div></div>
+
+                    <div>
+                        <label class="block mb-2 text-sm text-[#1E1E1E]">Country Code</label>
+                        <input type="text" name="country_code" value="{{ country_code }}" placeholder="Value"
+                            class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#0A1C3A]">
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm text-[#1E1E1E]">Nomor Telepon</label>
+                        <input type="text" name="mobile_number" value="{{ mobile_number }}" placeholder="Value"
+                            class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#0A1C3A]">
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm text-[#1E1E1E]">Tanggal Lahir</label>
+                        <input type="date" name="tanggal_lahir" value="{{ tanggal_lahir }}" placeholder="Value"
+                            class="w-full md:w-44 px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#0A1C3A]">
+                    </div>
+                </div>
+
+                <div class="flex justify-center mt-10">
+                    <button type="submit"
+                        class="w-full md:w-[586px] bg-[#0A1C3A] text-white py-3 rounded-lg font-semibold hover:bg-[#12305f] transition">
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="bg-[#FBFBFB] border border-[#A6A6A6] rounded-2xl p-10">
-        <form method="POST" action="/update-profile/">
-            {% csrf_token %}
-
-            <div class="grid grid-cols-2 gap-x-6 gap-y-6">
-                <div class="col-span-2 max-w-2xl">
-                    <label class="block mb-2 text-sm text-[#1E1E1E]">Email</label>
-                    <input type="email" value="{{ email }}" readonly placeholder="Value"
-                           class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white text-gray-500">
-                </div>
-
-                <div>
-                    <label class="block mb-2 text-sm text-[#1E1E1E]">Nomor Member</label>
-                    <input type="text" value="{{ nomor_member }}" readonly placeholder="Value"
-                        class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white text-gray-500">
-                </div>
-
-                <div>
-                    <label class="block mb-2 text-sm text-[#1E1E1E]">Tanggal Bergabung</label>
-                    <input type="text" value="{{ tanggal_bergabung }}" readonly placeholder="Value"
-                        class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white text-gray-500">
-                </div>
-
-                <div class="col-span-2 max-w-2xl">
-                    <label class="block mb-2 text-sm text-[#1E1E1E]">Salutation</label>
-                    <select name="salutation"
-                            class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white">
-                        <option value="">Pilih opsi</option>
-                        <option value="Mr." {% if salutation == "Mr." %}selected{% endif %}>Mr.</option>
-                        <option value="Mrs." {% if salutation == "Mrs." %}selected{% endif %}>Mrs.</option>
-                        <option value="Ms." {% if salutation == "Ms." %}selected{% endif %}>Ms.</option>
-                        <option value="Dr." {% if salutation == "Dr." %}selected{% endif %}>Dr.</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block mb-2 text-sm text-[#1E1E1E]">Nama Depan</label>
-                    <input type="text" name="first_mid_name" value="{{ first_mid_name }}" placeholder="Value"
-                           class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white">
-                </div>
-
-                <div>
-                    <label class="block mb-2 text-sm text-[#1E1E1E]">Nama Belakang</label>
-                    <input type="text" name="last_name" value="{{ last_name }}" placeholder="Value"
-                           class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white">
-                </div>
-
-                <div>
-                    <label class="block mb-2 text-sm text-[#1E1E1E]">Kewarganegaraan</label>
-                    <input type="text" name="kewarganegaraan" value="{{ kewarganegaraan }}" placeholder="Value"
-                           class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white">
-                </div>
-
-                <div></div>
-
-                <div>
-                    <label class="block mb-2 text-sm text-[#1E1E1E]">Country Code</label>
-                    <input type="text" name="country_code" value="{{ country_code }}" placeholder="Value"
-                           class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white">
-                </div>
-
-                <div>
-                    <label class="block mb-2 text-sm text-[#1E1E1E]">Nomor Telepon</label>
-                    <input type="text" name="mobile_number" value="{{ mobile_number }}" placeholder="Value"
-                           class="w-full px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white">
-                </div>
-
-                <div>
-                    <label class="block mb-2 text-sm text-[#1E1E1E]">Tanggal Lahir</label>
-                    <input type="date" name="tanggal_lahir" value="{{ tanggal_lahir }}" placeholder="Value"
-                           class="w-36 px-4 py-3 border border-[#D9D9D9] rounded-lg bg-white">
-                </div>
-            </div>
-
-            <div class="flex justify-center mt-10">
-                <button type="submit"
-                        class="w-[586px] bg-[#2C2C2C] text-white py-3 rounded-lg hover:bg-black transition">
-                    Simpan Perubahan
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+</section>
 {% endblock %}

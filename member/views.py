@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.humanize.templatetags.humanize import intcomma
+from datetime import date
 
 DUMMY_IDENTITAS = [
     {'nomor': 'A12345678', 'jenis': 'Paspor', 'negara': 'Indonesia',
@@ -107,13 +108,59 @@ def login_required_member(view_func):
 def identitas_view(request):
     if request.method == 'POST':
         action = request.POST.get('action')
+
         if action == 'tambah':
-            messages.success(request, 'Identitas berhasil ditambahkan.')
+            nomor = request.POST.get('nomor')
+
+            sudah_ada = any(i['nomor'] == nomor for i in DUMMY_IDENTITAS)
+            if sudah_ada:
+                messages.error(request, 'Nomor dokumen sudah terdaftar.')
+            else:
+                DUMMY_IDENTITAS.append({
+                    'nomor': nomor,
+                    'jenis': request.POST.get('jenis'),
+                    'negara': request.POST.get('negara'),
+                    'tanggal_terbit': request.POST.get('tanggal_terbit'),
+                    'tanggal_habis': request.POST.get('tanggal_habis'),
+                    'status': 'Aktif',
+                })
+                messages.success(request, 'Identitas berhasil ditambahkan.')
+
         elif action == 'edit':
+            nomor = request.POST.get('nomor')
+
+            for identitas in DUMMY_IDENTITAS:
+                if identitas['nomor'] == nomor:
+                    identitas['jenis'] = request.POST.get('jenis')
+                    identitas['negara'] = request.POST.get('negara')
+                    identitas['tanggal_terbit'] = request.POST.get('tanggal_terbit')
+                    identitas['tanggal_habis'] = request.POST.get('tanggal_habis')
+                    identitas['status'] = request.POST.get('status', 'Aktif')
+                    break
+
             messages.success(request, 'Identitas berhasil diperbarui.')
+
         elif action == 'hapus':
+            nomor = request.POST.get('nomor')
+
+            for identitas in DUMMY_IDENTITAS:
+                if identitas['nomor'] == nomor:
+                    DUMMY_IDENTITAS.remove(identitas)
+                    break
+
             messages.success(request, 'Identitas berhasil dihapus.')
+
         return redirect('member:identitas')
+
+    today = date.today()
+
+    for identitas in DUMMY_IDENTITAS:
+        tanggal_habis = date.fromisoformat(identitas['tanggal_habis'])
+
+        if today > tanggal_habis:
+            identitas['status'] = 'Kedaluwarsa'
+        else:
+            identitas['status'] = 'Aktif'
 
     return render(request, 'member/identitas.html', {
         'identitas_list': DUMMY_IDENTITAS,

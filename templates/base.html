@@ -2,87 +2,27 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AeroMiles{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Marcellus+SC&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        .font-marcellus { font-family: 'Marcellus SC', serif; }
-        .card-shadow { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}AeroMiles{% endblock %}</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Marcellus+SC&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    .font-marcellus { font-family: 'Marcellus SC', serif; }
+    .font-inter { font-family: 'Inter', sans-serif; }
+    .card-shadow { box-shadow: 0 4px 8px rgba(0,0,0,.25); }
+  </style>
 </head>
-<body class="font-['Montserrat'] text-gray-800 bg-[#f9fafb] flex flex-col min-h-screen">
 
-    {% include 'navbar.html' %}
+<body class="font-inter text-black min-h-screen">
+  {% include 'navbar.html' %}
 
-            <div class="flex gap-6 text-sm font-semibold items-center">
-                <a href="/dashboard/" class="hover:text-blue-300 transition">DASHBOARD</a>
-                <a href="/staff/kelola-member/" class="hover:text-blue-300 transition">KELOLA MEMBER</a>
-                <a href="/staff/kelola-klaim/" class="hover:text-blue-300 transition">KELOLA KLAIM</a>
-                <a href="/staff/kelola-hadiah/" class="hover:text-blue-300 transition">KELOLA HADIAH & PENYEDIA</a>
-                <a href="/staff/kelola-mitra/" class="hover:text-blue-300 transition">KELOLA MITRA</a>
-                <a href="/staff/laporan/" class="hover:text-blue-300 transition">LAPORAN TRANSAKSI</a>
-                <a href="/profile/" class="hover:text-blue-300 transition flex items-center gap-1" title="Pengaturan Profil">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5.121 17.804A8.966 8.966 0 0112 15c2.21 0 4.236.8 5.879 2.129M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                    PROFILE
-                </a>
-                <a href="/logout/" class="hover:text-blue-300 transition" title="Logout">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                    </svg>
-                </a>
-            </div>
-        </div>
-    </nav>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
 
-    <div class="hero-bg relative flex items-center justify-center text-center text-white bg-cover bg-center">
-        <div class="absolute inset-0 bg-black/40 pointer-events-none"></div>
-        <div class="relative z-10">
-            <h1 style="font-family: 'Plus Jakarta Sans', sans-serif;" class="text-5xl font-bold mb-3">Explore the World with AeroMiles</h1>
-            <p class="text-lg text-blue-100 opacity-90">Manage your miles, rewards, and travel identities in one place.</p>
-        </div>
-    <div id="toast-container" class="fixed bottom-5 right-5 z-[100] space-y-3 w-80">
-        {% if messages %}
-            {% for message in messages %}
-                {% if "Selamat datang" not in message|stringformat:"s" %}
-                <div class="alert-box p-4 rounded-lg shadow-lg border-2 flex items-center justify-between transition-all duration-500 transform translate-y-0 opacity-100 
-                    {% if message.tags == 'error' %}bg-red-50 text-red-800 border-red-700{% else %}bg-green-50 text-green-800 border-green-700{% endif %}">
-                    <span class="font-medium text-sm">{{ message }}</span>
-                    <button onclick="this.parentElement.remove()" class="ml-3 text-current opacity-60 hover:opacity-100 text-lg font-bold leading-none">&times;</button>
-                </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    </div>
-
-    <main class="flex-grow w-full">
-        {% block content %}{% endblock content %}
-    </main>
-
-    {% include 'footer.html' %}
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                const alerts = document.querySelectorAll('.alert-box');
-                alerts.forEach(function(alert) {
-                    alert.style.opacity = '0';
-                    alert.style.transform = 'translateY(10px)';
-                    setTimeout(function() { alert.remove(); }, 500);
-                });
-            }, 3000);
-        });
-
-        function toggleModal(modalID) {
-            const modal = document.getElementById(modalID);
-            if(modal) modal.classList.toggle('hidden');
-        }
-    </script>
-    
-    {% block extra_js %}{% endblock extra_js %}
+  {% block extra_js %}{% endblock %}
 </body>
 </html>
