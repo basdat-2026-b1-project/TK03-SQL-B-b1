@@ -78,7 +78,7 @@ def login_view(request):
         else:
             messages.error(request, 'Email atau password salah. Silakan coba lagi.')
 
-    return render(request, 'login.html')
+    return render(request, 'accounts/login.html')
 
 
 def register_view(request):

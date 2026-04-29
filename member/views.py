@@ -131,55 +131,103 @@ def identitas_view(request):
     })
 
 
-@login_required_member
-def klaim_view(request):
+# @login_required_member
+def claim_list(request):
+    # if request.session.get('role') != 'member':
+    #      return redirect('accounts:login') 
+
     filter_status = request.GET.get('status', 'Semua')
 
     if request.method == 'POST':
         action = request.POST.get('action')
+        
         if action == 'ajukan':
-            messages.success(request, 'Klaim berhasil diajukan dengan status Menunggu.')
-        elif action == 'edit':
-            messages.success(request, 'Klaim berhasil diperbarui.')
-        elif action == 'batalkan':
-            messages.success(request, 'Klaim berhasil dibatalkan.')
-        return redirect('member:klaim')
+            maskapai = request.POST.get('maskapai')
+            kelas = request.POST.get('kelas')
+            asal = request.POST.get('asal')
+            tujuan = request.POST.get('tujuan')
+            tanggal = request.POST.get('tanggal')
+            flight_number = request.POST.get('flight_number')
+            nomor_tiket = request.POST.get('nomor_tiket')
+            pnr = request.POST.get('pnr')
 
-    klaim_list = DUMMY_KLAIM
+            messages.success(request, f'Klaim untuk penerbangan {flight_number} ({asal} - {tujuan}) berhasil diajukan.')
+            return redirect('member:claim_list')
+        
+        elif action == 'edit':
+            # Hanya bisa edit jika status 'Menunggu'
+            status_klaim = request.POST.get('status_saat_ini') 
+            if status_klaim == 'Menunggu':
+                messages.success(request, 'Klaim berhasil diperbarui.')
+            else:
+                # Tidak bisa diubah jika sudah Disetujui/Ditolak
+                messages.error(request, 'Klaim yang sudah Disetujui atau Ditolak tidak dapat diubah.')
+        
+        elif action == 'batalkan':
+            # Menampilkan konfirmasi sebelum pembatalan (dihandle di HTML)
+            # Dan hanya status 'Menunggu' yang bisa dihapus
+            status_klaim = request.POST.get('status_saat_ini')
+            if status_klaim == 'Menunggu':
+                messages.success(request, 'Klaim berhasil dibatalkan.')
+            else:
+                messages.error(request, 'Klaim sudah diproses, tidak bisa dibatalkan.')
+        
+        return redirect('member:claim_list') 
+
+    # R - Riwayat Klaim
+    klaim_list_filtered = DUMMY_KLAIM
     if filter_status != 'Semua':
-        klaim_list = [k for k in klaim_list if k['status'] == filter_status]
+        # Filter status sesuai permintaan (Menunggu/Disetujui/Ditolak)
+        klaim_list_filtered = [k for k in DUMMY_KLAIM if k['status'] == filter_status]
 
     return render(request, 'member/klaim.html', {
-        'klaim_list': klaim_list,
-        'maskapai_list': DUMMY_MASKAPAI,
-        'bandara_list': DUMMY_BANDARA,
+        'klaim_list': klaim_list_filtered,
         'filter_status': filter_status,
+        'status_choices': ['Semua', 'Menunggu', 'Disetujui', 'Ditolak'],
     })
 
-
-@login_required_member
+# @login_required_member
 def transfer_view(request):
+    # Simulasi data member yang sedang login
+    # Di frontend, kamu bisa akses dengan {{ member.award_miles }}
+    member_dummy = {
+        'nama_lengkap': 'Nisrina Alya',
+        'email_pengguna': 'nisrina.alya@ui.ac.id',
+        'award_miles': 32000  # Saldo simulasi
+    }
+
     if request.method == 'POST':
         email_penerima = request.POST.get('email_penerima', '').strip()
-        jumlah = int(request.POST.get('jumlah', 0) or 0)
-        award_miles = request.session.get('award_miles', 0)
+        jumlah_raw = request.POST.get('jumlah', 0)
+        catatan = request.POST.get('catatan', '')
 
-        if email_penerima == request.session.get('email'):
-            messages.error(request, 'Tidak dapat mentransfer miles ke diri sendiri.')
+        # Validasi sederhana untuk dummy
+        try:
+            jumlah = int(jumlah_raw)
+        except ValueError:
+            messages.error(request, 'Jumlah miles harus berupa angka.')
+            return redirect('member:transfer')
+
+        # Logic sesuai ketentuan foto
+        if email_penerima == member_dummy['email_pengguna']:
+            messages.error(request, 'Member tidak dapat mentransfer miles ke dirinya sendiri.')
         elif jumlah <= 0:
             messages.error(request, 'Jumlah miles harus lebih dari 0.')
-        elif jumlah > award_miles:
-            messages.error(request, f'Award miles tidak mencukupi. Saldo: {award_miles} miles.')
+        elif jumlah > member_dummy['award_miles']:
+            messages.error(request, f'Award miles tidak mencukupi. Saldo Anda: {member_dummy["award_miles"]} miles.')
         else:
+            # Simulasi berhasil (Data tidak benar-benar tersimpan ke list karena list ada di memori)
             messages.success(request, f'Berhasil transfer {jumlah} miles ke {email_penerima}.')
+        
         return redirect('member:transfer')
 
     return render(request, 'member/transfer.html', {
+        'member': member_dummy,
         'transfer_list': DUMMY_TRANSFER,
+        'email_session': member_dummy['email_pengguna'] # Untuk pembeda Kirim/Terima di tabel
     })
 
-
-#@login_required_member
+@login_required_member
 def redeem_view(request):
     active_tab = request.GET.get('tab', 'katalog')
 
