@@ -4,11 +4,7 @@ from django.shortcuts import render, redirect
 from django.db import connection
 from django.contrib.auth.hashers import check_password, make_password
 from .models import Pengguna, Member, Staf, Maskapai
-
-# ============================================================
-# DUMMY DATA - Simulasi database untuk TK03
-# di TK04 ini akan diganti dengan query ke PostgreSQL
-# ============================================================
+from datetime import date
 
 DUMMY_USERS = {
     'john@example.com': {
@@ -22,7 +18,6 @@ DUMMY_USERS = {
         'mobile_number': '81234567890',
         'tanggal_lahir': '1990-05-15',
         'kewarganegaraan': 'Indonesia',
-        # Data khusus member
         'nomor_member': 'M0001',
         'tanggal_bergabung': '2024-01-15',
         'tier': 'Gold',
@@ -40,7 +35,6 @@ DUMMY_USERS = {
         'mobile_number': '81111111111',
         'tanggal_lahir': '1988-01-01',
         'kewarganegaraan': 'Indonesia',
-        # Data khusus staf
         'id_staf': 'S0001',
         'maskapai': 'Garuda Indonesia',
         'kode_maskapai': 'GA',
@@ -55,12 +49,8 @@ DUMMY_TRANSAKSI_TERBARU = [
     {'tipe': 'Transfer', 'timestamp': '2024-12-10 14:00', 'jumlah': 2000},
 ]
 
-# ============================================================
-
-
 def landing_page(request):
     return render(request, 'base.html')
-
 
 def login_view(request):
     if request.session.get('role'):
@@ -105,6 +95,7 @@ def register_view(request):
         role = request.POST.get('role', 'member')
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
+        tanggal_bergabung = date.today()
         
         # validate
         if not email:
@@ -112,7 +103,7 @@ def register_view(request):
         elif email in DUMMY_USERS:
             messages.error(request, 'Email sudah terdaftar.')
         else:
-            # simpan data dummy baru ke dalam dictionary -> data selain dummy data
+            # simpan data dummy baru ke dalam dictionary, data selain dummy data
             DUMMY_USERS[email] = {
                 'password': password,
                 'role': role,
@@ -122,7 +113,6 @@ def register_view(request):
             messages.success(request, 'Akun berhasil dibuat! Silakan login.')
             return redirect('accounts:login')
 
-    # dijalankan saat halaman pertama kali dibuka (GET request)
     return render(request, 'register.html', {
         'maskapai_choices': MASKAPAI_CHOICES
     })
@@ -170,12 +160,8 @@ def profile_view(request):
         'mobile_number': request.session.get('mobile_number', ''),
         'tanggal_lahir': request.session.get('tanggal_lahir', ''),
         'kewarganegaraan': request.session.get('kewarganegaraan', ''),
-
-        # khusus member
         'nomor_member': request.session.get('nomor_member', ''),
         'tanggal_bergabung': request.session.get('tanggal_bergabung', ''),
-
-        # khusus staf
         'id_staf': request.session.get('id_staf', ''),
         'kode_maskapai': request.session.get('kode_maskapai', ''),
         'maskapai_choices': [
@@ -187,10 +173,17 @@ def profile_view(request):
         ],
     }
 
+    if request.session.get('role') == 'member':
+        context['nomor_member'] = request.session.get('nomor_member', '')
+        context['tanggal_bergabung'] = request.session.get('tanggal_bergabung', '')
+        return render(request, 'profile_member.html', context)
+
     if role == 'staf':
+        context['id_staf'] = request.session.get('id_staf', '')
+        context['kode_maskapai'] = request.session.get('kode_maskapai', '')
         return render(request, 'profile_staff.html', context)
 
-    return render(request, 'profile_member.html', context)
+    return redirect('accounts:dashboard')
 
 def update_profile(request):
     if not request.session.get('role'):
@@ -219,8 +212,6 @@ def update_profile_photo(request):
         return redirect('accounts:login')
 
     if request.method == 'POST':
-        # Sementara belum disimpan permanen ke database/media.
-        # Nanti kalau sudah pakai ImageField, baru disimpan ke folder media.
         messages.info(request, 'Upload foto belum disambungkan ke database/media.')
 
     return redirect('accounts:profile')
