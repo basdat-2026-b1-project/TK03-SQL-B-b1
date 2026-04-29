@@ -2,6 +2,10 @@ from datetime import datetime
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.db import connection
+from django.contrib.auth.hashers import make_password
+from datetime import date
+from django.core.paginator import Paginator
 
 DUMMY_MEMBERS = [
     {'nomor': 'M0001', 'nama': 'Mr. John William Doe', 'email': 'john@example.com',
@@ -107,25 +111,65 @@ def kelola_member_view(request):
 
     if request.method == 'POST':
         action = request.POST.get('action')
+
         if action == 'tambah':
+            new_member = {
+                'nomor': f"M{len(DUMMY_MEMBERS) + 1:04d}",
+                'nama': f"{request.POST.get('salutation')} {request.POST.get('first_mid_name')} {request.POST.get('last_name')}",
+                'email': request.POST.get('email'),
+                'tier': request.POST.get('tier', 'Blue'),
+                'total_miles': 0,
+                'award_miles': 0,
+                'bergabung': date.today().strftime('%Y-%m-%d'),
+            }
+            DUMMY_MEMBERS.append(new_member)
             messages.success(request, 'Member baru berhasil ditambahkan.')
+
         elif action == 'edit':
-            messages.success(request, 'Data member berhasil diperbarui.')
+            email = request.POST.get('email')
+
+            for m in DUMMY_MEMBERS:
+                if m['email'] == email:
+                    m['nama'] = request.POST.get('nama')
+                    m['tier'] = request.POST.get('tier')
+                    m['total_miles'] = int(request.POST.get('total_miles', 0))
+                    m['award_miles'] = int(request.POST.get('award_miles', 0))
+                    break
+
+            messages.success(request, f'Data member {email} berhasil diperbarui.')
+
         elif action == 'hapus':
-            messages.success(request, 'Member berhasil dihapus beserta seluruh data terkait.')
+            email = request.POST.get('email')
+
+            for m in DUMMY_MEMBERS:
+                if m['email'] == email:
+                    DUMMY_MEMBERS.remove(m)
+                    break
+
+            messages.success(request, f'Member {email} berhasil dihapus.')
+
         return redirect('staff:kelola_member')
 
     members = DUMMY_MEMBERS
+
     if search:
-        members = [m for m in members if
-                   search.lower() in m['nama'].lower() or
-                   search.lower() in m['email'].lower() or
-                   search.lower() in m['nomor'].lower()]
+        members = [
+            m for m in members
+            if search.lower() in m['nama'].lower()
+            or search.lower() in m['email'].lower()
+            or search.lower() in m['nomor'].lower()
+        ]
+
     if filter_tier != 'Semua':
         members = [m for m in members if m['tier'] == filter_tier]
 
+    paginator = Paginator(members, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'staff/kelola_member.html', {
-        'members': members,
+        'members': page_obj,
+        'page_obj': page_obj,
         'search': search,
         'filter_tier': filter_tier,
         'tier_choices': TIER_CHOICES,

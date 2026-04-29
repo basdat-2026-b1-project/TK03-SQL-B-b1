@@ -16,6 +16,35 @@
 
     {% include 'navbar.html' %}
 
+            <div class="flex gap-6 text-sm font-semibold items-center">
+                <a href="/dashboard/" class="hover:text-blue-300 transition">DASHBOARD</a>
+                <a href="/staff/kelola-member/" class="hover:text-blue-300 transition">KELOLA MEMBER</a>
+                <a href="/staff/kelola-klaim/" class="hover:text-blue-300 transition">KELOLA KLAIM</a>
+                <a href="/staff/kelola-hadiah/" class="hover:text-blue-300 transition">KELOLA HADIAH & PENYEDIA</a>
+                <a href="/staff/kelola-mitra/" class="hover:text-blue-300 transition">KELOLA MITRA</a>
+                <a href="/staff/laporan/" class="hover:text-blue-300 transition">LAPORAN TRANSAKSI</a>
+                <a href="/profile/" class="hover:text-blue-300 transition flex items-center gap-1" title="Pengaturan Profil">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5.121 17.804A8.966 8.966 0 0112 15c2.21 0 4.236.8 5.879 2.129M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    PROFILE
+                </a>
+                <a href="/logout/" class="hover:text-blue-300 transition" title="Logout">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-bg relative flex items-center justify-center text-center text-white bg-cover bg-center">
+        <div class="absolute inset-0 bg-black/40 pointer-events-none"></div>
+        <div class="relative z-10">
+            <h1 style="font-family: 'Plus Jakarta Sans', sans-serif;" class="text-5xl font-bold mb-3">Explore the World with AeroMiles</h1>
+            <p class="text-lg text-blue-100 opacity-90">Manage your miles, rewards, and travel identities in one place.</p>
+        </div>
     <div id="toast-container" class="fixed bottom-5 right-5 z-[100] space-y-3 w-80">
         {% if messages %}
             {% for message in messages %}
