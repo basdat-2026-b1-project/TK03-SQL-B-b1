@@ -1,9 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.humanize.templatetags.humanize import intcomma
 
 # ====================================================
 # DUMMY DATA untuk semua fitur member
 # ====================================================
+
+
+
+
 
 DUMMY_IDENTITAS = [
     {'nomor': 'A12345678', 'jenis': 'Paspor', 'negara': 'Indonesia',
@@ -195,7 +200,6 @@ def redeem_view(request):
         'active_tab': active_tab,
     })
 
-# @login_required_member
 def dashboard(request):
     # Nanti ganti dengan query DB beneran
     context = {
