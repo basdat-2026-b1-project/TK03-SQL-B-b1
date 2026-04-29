@@ -1,9 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-
-# ====================================================
-# DUMMY DATA untuk semua fitur member
-# ====================================================
+from django.contrib.humanize.templatetags.humanize import intcomma
 
 DUMMY_IDENTITAS = [
     {'nomor': 'A12345678', 'jenis': 'Paspor', 'negara': 'Indonesia',
@@ -95,9 +92,6 @@ DUMMY_TIERS = [
      'keuntungan': ['Bonus miles 100%', 'Upgrade gratis', 'Akses lounge first class', 'Extra bagasi 20kg', 'Dedicated hotline']},
 ]
 
-# ====================================================
-
-
 def login_required_member(view_func):
     """Simple decorator untuk cek session member"""
     def wrapper(request, *args, **kwargs):
@@ -125,12 +119,7 @@ def identitas_view(request):
         'identitas_list': DUMMY_IDENTITAS,
     })
 
-
-# @login_required_member
 def claim_list(request):
-    # if request.session.get('role') != 'member':
-    #      return redirect('accounts:login') 
-
     filter_status = request.GET.get('status', 'Semua')
 
     if request.method == 'POST':
@@ -150,17 +139,13 @@ def claim_list(request):
             return redirect('member:claim_list')
         
         elif action == 'edit':
-            # Hanya bisa edit jika status 'Menunggu'
             status_klaim = request.POST.get('status_saat_ini') 
             if status_klaim == 'Menunggu':
                 messages.success(request, 'Klaim berhasil diperbarui.')
             else:
-                # Tidak bisa diubah jika sudah Disetujui/Ditolak
                 messages.error(request, 'Klaim yang sudah Disetujui atau Ditolak tidak dapat diubah.')
         
         elif action == 'batalkan':
-            # Menampilkan konfirmasi sebelum pembatalan (dihandle di HTML)
-            # Dan hanya status 'Menunggu' yang bisa dihapus
             status_klaim = request.POST.get('status_saat_ini')
             if status_klaim == 'Menunggu':
                 messages.success(request, 'Klaim berhasil dibatalkan.')
@@ -172,7 +157,6 @@ def claim_list(request):
     # R - Riwayat Klaim
     klaim_list_filtered = DUMMY_KLAIM
     if filter_status != 'Semua':
-        # Filter status sesuai permintaan (Menunggu/Disetujui/Ditolak)
         klaim_list_filtered = [k for k in DUMMY_KLAIM if k['status'] == filter_status]
 
     return render(request, 'member/klaim.html', {
@@ -181,14 +165,11 @@ def claim_list(request):
         'status_choices': ['Semua', 'Menunggu', 'Disetujui', 'Ditolak'],
     })
 
-# @login_required_member
 def transfer_view(request):
-    # Simulasi data member yang sedang login
-    # Di frontend, kamu bisa akses dengan {{ member.award_miles }}
     member_dummy = {
         'nama_lengkap': 'Nisrina Alya',
         'email_pengguna': 'nisrina.alya@ui.ac.id',
-        'award_miles': 32000  # Saldo simulasi
+        'award_miles': 32000
     }
 
     if request.method == 'POST':
@@ -196,14 +177,12 @@ def transfer_view(request):
         jumlah_raw = request.POST.get('jumlah', 0)
         catatan = request.POST.get('catatan', '')
 
-        # Validasi sederhana untuk dummy
         try:
             jumlah = int(jumlah_raw)
         except ValueError:
             messages.error(request, 'Jumlah miles harus berupa angka.')
             return redirect('member:transfer')
 
-        # Logic sesuai ketentuan foto
         if email_penerima == member_dummy['email_pengguna']:
             messages.error(request, 'Member tidak dapat mentransfer miles ke dirinya sendiri.')
         elif jumlah <= 0:
@@ -211,7 +190,6 @@ def transfer_view(request):
         elif jumlah > member_dummy['award_miles']:
             messages.error(request, f'Award miles tidak mencukupi. Saldo Anda: {member_dummy["award_miles"]} miles.')
         else:
-            # Simulasi berhasil (Data tidak benar-benar tersimpan ke list karena list ada di memori)
             messages.success(request, f'Berhasil transfer {jumlah} miles ke {email_penerima}.')
         
         return redirect('member:transfer')
@@ -219,7 +197,7 @@ def transfer_view(request):
     return render(request, 'member/transfer.html', {
         'member': member_dummy,
         'transfer_list': DUMMY_TRANSFER,
-        'email_session': member_dummy['email_pengguna'] # Untuk pembeda Kirim/Terima di tabel
+        'email_session': member_dummy['email_pengguna']
     })
 
 @login_required_member
@@ -243,11 +221,9 @@ def redeem_view(request):
         'active_tab': active_tab,
     })
 
-# @login_required_member
 def dashboard(request):
-    # Nanti ganti dengan query DB beneran
+    # Nanti diganti dengan real query DB
     context = {
-        # Info Pribadi
         'nama': 'Nisrina Alya',
         'email': 'nisrina.alya@ui.ac.id',
         'telepon': '+62-8137-0998-516',
@@ -271,7 +247,6 @@ def dashboard(request):
     }
     return render(request, 'member/dashboard.html', context)
 
-@login_required_member
 def package_view(request):
     if request.method == 'POST':
         pkg_id = request.POST.get('package_id')
@@ -285,12 +260,10 @@ def package_view(request):
     })
 
 
-@login_required_member
 def info_tier_view(request):
     current_tier = request.session.get('tier', 'Blue')
     total_miles = request.session.get('total_miles', 0)
 
-    # Cari tier berikutnya
     tier_names = [t['nama'] for t in DUMMY_TIERS]
     current_idx = tier_names.index(current_tier) if current_tier in tier_names else 0
     next_tier = DUMMY_TIERS[current_idx + 1] if current_idx < len(DUMMY_TIERS) - 1 else None

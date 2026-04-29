@@ -3,10 +3,6 @@ from datetime import datetime
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-# ====================================================
-# DUMMY DATA untuk fitur staf
-# ====================================================
-
 DUMMY_MEMBERS = [
     {'nomor': 'M0001', 'nama': 'Mr. John William Doe', 'email': 'john@example.com',
      'tier': 'Gold', 'total_miles': 45000, 'award_miles': 32000, 'bergabung': '2024-01-15'},
@@ -94,9 +90,6 @@ DUMMY_TOP_MEMBERS = [
 
 TIER_CHOICES = ['Blue', 'Silver', 'Gold', 'Platinum']
 
-# ====================================================
-
-
 def login_required_staf(view_func):
     def wrapper(request, *args, **kwargs):
         if not request.session.get('role'):
@@ -153,7 +146,6 @@ def dashboard(request):
     }
     return render(request, 'staff/dashboard.html', context)
 
-# @login_required_staf
 def kelola_klaim_view(request):
     filter_status = request.GET.get('status', 'Semua')
     filter_maskapai = request.GET.get('maskapai', 'Semua')
@@ -313,7 +305,6 @@ def kelola_mitra_view(request):
     return render(request, 'staff/kelola_mitra.html', {'mitra_list': DUMMY_MITRA})
 
 
-@login_required_staf
 def laporan_view(request):
     filter_tipe = request.GET.get('tipe', 'Semua')
     active_tab = request.GET.get('tab', 'riwayat')
