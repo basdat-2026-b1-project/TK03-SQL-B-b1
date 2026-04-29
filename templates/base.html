@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AeroMiles{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus+SC&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: #f9fafb; 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Agar footer selalu di bawah */
+        }
+        .card-shadow { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    {% include 'navbar.html' %}
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[100] space-y-3 w-80">
+        {% if messages %}
+            {% for message in messages %}
+                {% if "Selamat datang" not in message|stringformat:"s" %}
+                <div class="alert-box p-4 rounded-lg shadow-lg border-2 flex items-center justify-between transition-all duration-500 transform translate-y-0 opacity-100 
+                    {% if message.tags == 'error' %}
+                        bg-red-50 text-red-800 border-red-700
+                    {% else %}
+                        bg-green-50 text-green-800 border-green-700
+                    {% endif %}">
+                    <span class="font-medium text-sm">{{ message }}</span>
+                    <button onclick="this.parentElement.remove()" class="ml-3 text-current opacity-60 hover:opacity-100 text-lg font-bold leading-none">&times;</button>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <main class="flex-grow">
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+    {% include 'footer.html' %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert-box');
+                alerts.forEach(function(alert) {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(10px)';
+                    setTimeout(function() { alert.remove(); }, 500);
+                });
+            }, 3000);
+        });
+
+        function toggleModal(modalID) {
+            const modal = document.getElementById(modalID);
+            if(modal) modal.classList.toggle('hidden');
+        }
+    </script>
+
+    {% block extra_js %}{% endblock extra_js %}
+
+</body>
+</html>

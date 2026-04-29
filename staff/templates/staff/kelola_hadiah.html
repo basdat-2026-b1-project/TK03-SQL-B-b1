@@ -31,19 +31,25 @@
         </div>
     </nav>
 
-    <div class="max-w-6xl mx-auto px-4 py-8">
-        
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[100] space-y-3 w-80">
         {% if messages %}
-            <div id="alert-container" class="mb-6 space-y-2">
-                {% for message in messages %}
-                    {% if "Selamat datang" not in message|stringformat:"s" %}
-                    <div class="alert-box p-4 rounded-md text-sm transition-opacity duration-500 ease-in-out {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
-                        {{ message }}
-                    </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
+            {% for message in messages %}
+                {% if "Selamat datang" not in message|stringformat:"s" %}
+                <div class="alert-box p-4 rounded-lg shadow-lg border-2 flex items-center justify-between transition-all duration-500 transform translate-y-0 opacity-100 
+                    {% if message.tags == 'error' %}
+                        bg-red-50 text-red-800 border-red-700
+                    {% else %}
+                        bg-green-50 text-green-800 border-green-700
+                    {% endif %}">
+                    <span class="font-medium text-sm">{{ message }}</span>
+                    <button onclick="this.parentElement.remove()" class="ml-3 text-current opacity-60 hover:opacity-100 text-lg font-bold leading-none">&times;</button>
+                </div>
+                {% endif %}
+            {% endfor %}
         {% endif %}
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 py-8">
 
         <div class="flex justify-between items-center mb-6">
             <div>
@@ -92,16 +98,13 @@
                                 </svg> Edit
                             </button>
 
-                            <form action="" method="POST" class="inline m-0">
-                                {% csrf_token %}
-                                <input type="hidden" name="action" value="hapus">
-                                <input type="hidden" name="kode_hadiah" value="{{ hadiah.kode }}">
-                                <button type="submit" class="text-red-500 hover:text-red-700 font-medium text-sm flex items-center disabled:opacity-30 disabled:cursor-not-allowed transition" {% if hadiah.aktif %}disabled title="Hanya bisa dihapus jika selesai"{% endif %}>
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                    </svg> Hapus
-                                </button>
-                            </form>
+                            <button type="button" onclick="openDeleteModal('{{ hadiah.kode }}')" 
+                                    class="text-red-500 hover:text-red-700 font-medium text-sm flex items-center disabled:opacity-30 disabled:cursor-not-allowed transition" 
+                                    {% if hadiah.aktif %}disabled title="Hanya bisa dihapus jika selesai"{% endif %}>
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg> Hapus
+                            </button>
                         </td>
                     </tr>
                     {% endfor %}
@@ -226,6 +229,26 @@
         </div>
     </div>
 
+    <div id="modalHapusHadiah" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden p-6 text-center">
+            <h3 class="font-bold text-xl text-gray-800 mb-2">Hapus Hadiah?</h3>
+            <p class="text-sm text-gray-500 mb-6 px-4">Tindakan ini tidak dapat dibatalkan. Pastikan hadiah ini sudah benar-benar tidak berlaku lagi.</p>
+            
+            <form method="POST" class="flex justify-center space-x-3">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="hapus">
+                <input type="hidden" name="kode_hadiah" id="delete_kode">
+                
+                <button type="button" onclick="toggleModal('modalHapusHadiah')" class="px-6 py-2 text-sm font-bold text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition">
+                    Batal
+                </button>
+                <button type="submit" class="px-6 py-2 text-sm font-bold bg-[#1a233a] text-white rounded-md hover:bg-[#0f1523] transition">
+                    Hapus
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script>
         function toggleModal(modalID) {
             const modal = document.getElementById(modalID);
@@ -244,17 +267,24 @@
             toggleModal('modalEditHadiah');
         }
 
-        // untuk menghilangkan notifikasi secara otomatis setelah 5 detik
+        // Fungsi baru untuk membuka modal hapus dan mengisi kode hadiah
+        function openDeleteModal(kode) {
+            document.getElementById('delete_kode').value = kode;
+            toggleModal('modalHapusHadiah');
+        }
+
+        // Script menghilangkan notifikasi secara otomatis
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
                 const alerts = document.querySelectorAll('.alert-box');
                 alerts.forEach(function(alert) {
-                    alert.style.opacity = '0'; // efek fade out
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(10px)';
                     setTimeout(function() {
-                        alert.style.display = 'none'; // hapus dari layar setelah animasi selesai
-                    }, 500); // durasi transition-opacity di atas
+                        alert.remove();
+                    }, 500);
                 });
-            }, 5000); // 5000ms = 5 detik
+            }, 3000); // muncul selama 3 detik
         });
     </script>
 </body>
