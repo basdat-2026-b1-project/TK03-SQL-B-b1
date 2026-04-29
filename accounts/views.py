@@ -141,7 +141,7 @@ def dashboard_view(request):
             'klaim_disetujui': 12,
             'klaim_ditolak': 3,
         }
-    return render(request, 'accounts/dashboard.html', context)
+    return render(request, 'dashboard.html', context)
 
 
 def profile_view(request):

@@ -1,72 +1,38 @@
-<nav class="bg-[#1a233a] text-white shadow-md relative z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-            
-            <div class="flex-shrink-0 flex items-center space-x-2">
-                <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
-                    <path d="M21,16L22,19H2L3,16H3.82l2.3-7.53C6.32,7.74,7.02,7,7.87,7H16.13c0.85,0,1.55,0.74,1.75,1.47L20.18,16H21M17,16L15.3,10H8.7L7,16H17Z" />
-                </svg>
-                <span class="text-xl font-bold tracking-wider font-marcellus hidden sm:block">AEROMILES</span>
-            </div>
+<nav class="bg-[#0A1C3A] text-[#C6C6C6] h-[104px] flex items-center px-12 relative z-50">
+  <div class="flex items-center gap-4 mr-16">
+    <div class="text-white text-5xl">✈</div>
+    <div class="font-marcellus text-2xl">Aeromiles</div>
+  </div>
 
-            <div class="hidden lg:flex space-x-6 items-center h-full">
-                <a href="{% url 'accounts:dashboard' %}" class="flex items-center space-x-1 h-full border-b-2 transition pt-1 {% if request.resolver_match.url_name == 'dashboard' %}border-white text-white{% else %}border-transparent text-gray-400 hover:text-white{% endif %}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    <span class="text-xs font-medium uppercase tracking-wider">Dashboard</span>
-                </a>
-                
-                <a href="{% url 'staff:kelola_member' %}" class="flex items-center space-x-1 h-full border-b-2 transition pt-1 {% if request.resolver_match.url_name == 'kelola_member' %}border-white text-white{% else %}border-transparent text-gray-400 hover:text-white{% endif %}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <span class="text-xs font-medium uppercase tracking-wider">Kelola Member</span>
-                </a>
+  {% if request.session.role == "staff" %}
+  <div class="hidden lg:flex items-center gap-10 font-marcellus text-sm text-center">
+    <a href="{% url 'accounts:dashboard' %}" class="hover:text-white border-b border-[#C6C6C6] pb-1">Dashboard</a>
+    <a href="{% url 'staff:kelola_member' %}" class="hover:text-white">Kelola<br>Member</a>
+    <a href="{% url 'staff:kelola_klaim' %}" class="hover:text-white">Kelola<br>Klaim</a>
+    <a href="{% url 'staff:kelola_hadiah' %}" class="hover:text-white">Kelola<br>Hadiah & Penyedia</a>
+    <a href="{% url 'staff:kelola_mitra' %}" class="hover:text-white">Kelola<br>Mitra</a>
+    <a href="{% url 'staff:laporan' %}" class="hover:text-white">Laporan<br>Transaksi</a>
+    <a href="{% url 'accounts:profile' %}" class="hover:text-white">Pengaturan<br>Profil</a>
+  </div>
+  {% else %}
+  <div class="hidden lg:flex items-center gap-10 font-marcellus text-sm text-center">
+    <a href="{% url 'accounts:dashboard' %}" class="hover:text-white border-b border-[#C6C6C6] pb-1">Dashboard</a>
+    <a href="#" class="hover:text-white">Identitas<br>Saya</a>
+    <a href="#" class="hover:text-white">Klaim<br>Miles</a>
+    <a href="#" class="hover:text-white">Transfer<br>Miles</a>
+    <a href="#" class="hover:text-white">Redeem<br>Hadiah</a>
+    <a href="#" class="hover:text-white">Beli<br>Package</a>
+    <a href="#" class="hover:text-white">Info<br>Tier</a>
+    <a href="{% url 'accounts:profile' %}" class="hover:text-white">Pengaturan<br>Profil</a>
+  </div>
+  {% endif %}
 
-                <a href="{% url 'staff:kelola_klaim' %}" class="flex items-center space-x-1 h-full border-b-2 transition pt-1 {% if request.resolver_match.url_name == 'kelola_klaim' %}border-white text-white{% else %}border-transparent text-gray-400 hover:text-white{% endif %}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <span class="text-xs font-medium uppercase tracking-wider">Kelola Klaim</span>
-                </a>
-
-                <a href="{% url 'staff:kelola_hadiah' %}" class="flex items-center space-x-1 h-full border-b-2 transition pt-1 {% if request.resolver_match.url_name == 'kelola_hadiah' %}border-white text-white{% else %}border-transparent text-gray-400 hover:text-white{% endif %}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
-                    <span class="text-xs font-medium uppercase tracking-wider">Kelola Hadiah</span>
-                </a>
-
-                <a href="{% url 'staff:kelola_mitra' %}" class="flex items-center space-x-1 h-full border-b-2 transition pt-1 {% if request.resolver_match.url_name == 'kelola_mitra' %}border-white text-white{% else %}border-transparent text-gray-400 hover:text-white{% endif %}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    <span class="text-xs font-medium uppercase tracking-wider">Kelola Mitra</span>
-                </a>
-
-                <a href="{% url 'staff:laporan' %}" class="flex items-center space-x-1 h-full border-b-2 transition pt-1 {% if request.resolver_match.url_name == 'laporan' %}border-white text-white{% else %}border-transparent text-gray-400 hover:text-white{% endif %}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    <span class="text-xs font-medium uppercase tracking-wider">Laporan</span>
-                </a>
-            </div>
-
-            <div class="hidden lg:flex items-center">
-                <a href="{% url 'accounts:logout' %}" title="Logout" class="text-gray-400 hover:text-white transition flex items-center p-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                </a>
-            </div>
-
-            <div class="flex lg:hidden items-center">
-                <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="mobile-menu" class="hidden lg:hidden bg-[#151c2f] px-4 pt-2 pb-4 space-y-2 border-t border-gray-700">
-        <a href="{% url 'accounts:dashboard' %}" class="block px-3 py-2 rounded-md text-sm font-medium {% if request.resolver_match.url_name == 'dashboard' %}bg-white/10 text-white{% else %}text-gray-300 hover:bg-white/5{% endif %}">Dashboard</a>
-        <a href="{% url 'staff:kelola_member' %}" class="block px-3 py-2 rounded-md text-sm font-medium {% if request.resolver_match.url_name == 'kelola_member' %}bg-white/10 text-white{% else %}text-gray-300 hover:bg-white/5{% endif %}">Kelola Member</a>
-        <a href="{% url 'staff:kelola_klaim' %}" class="block px-3 py-2 rounded-md text-sm font-medium {% if request.resolver_match.url_name == 'kelola_klaim' %}bg-white/10 text-white{% else %}text-gray-300 hover:bg-white/5{% endif %}">Kelola Klaim</a>
-        <a href="{% url 'staff:kelola_hadiah' %}" class="block px-3 py-2 rounded-md text-sm font-medium {% if request.resolver_match.url_name == 'kelola_hadiah' %}bg-white/10 text-white{% else %}text-gray-300 hover:bg-white/5{% endif %}">Kelola Hadiah</a>
-        <a href="{% url 'staff:kelola_mitra' %}" class="block px-3 py-2 rounded-md text-sm font-medium {% if request.resolver_match.url_name == 'kelola_mitra' %}bg-white/10 text-white{% else %}text-gray-300 hover:bg-white/5{% endif %}">Kelola Mitra</a>
-        <a href="{% url 'staff:laporan' %}" class="block px-3 py-2 rounded-md text-sm font-medium {% if request.resolver_match.url_name == 'laporan' %}bg-white/10 text-white{% else %}text-gray-300 hover:bg-white/5{% endif %}">Laporan Transaksi</a>
-        <hr class="border-gray-600 my-2">
-        <a href="{% url 'accounts:logout' %}" class="block px-3 py-2 rounded-md text-sm font-medium text-red-400 hover:bg-red-500/10">Logout</a>
-    </div>
+  <a href="{% url 'accounts:logout' %}" class="ml-auto text-white hover:text-blue-300">
+    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+    </svg>
+  </a>
 </nav>
 
 <script>
