@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.db import connection
+from django.contrib.auth.hashers import check_password, make_password
+from .models import Pengguna, Member, Staf, Maskapai
 
 # ============================================================
 # DUMMY DATA - Simulasi database untuk TK03
@@ -152,97 +154,105 @@ def dashboard_view(request):
     return render(request, 'dashboard.html', context)
 
 
-def profil_view(request):
+def profile_view(request):
+    if not request.session.get('role'):
+        return redirect('accounts:login')
+
+    role = request.session.get('role')
+
+    context = {
+        'email': request.session.get('email', ''),
+        'role': role,
+        'salutation': request.session.get('salutation', ''),
+        'first_mid_name': request.session.get('first_mid_name', ''),
+        'last_name': request.session.get('last_name', ''),
+        'country_code': request.session.get('country_code', ''),
+        'mobile_number': request.session.get('mobile_number', ''),
+        'tanggal_lahir': request.session.get('tanggal_lahir', ''),
+        'kewarganegaraan': request.session.get('kewarganegaraan', ''),
+
+        # khusus member
+        'nomor_member': request.session.get('nomor_member', ''),
+        'tanggal_bergabung': request.session.get('tanggal_bergabung', ''),
+
+        # khusus staf
+        'id_staf': request.session.get('id_staf', ''),
+        'kode_maskapai': request.session.get('kode_maskapai', ''),
+        'maskapai_choices': [
+            ('GA', 'Garuda Indonesia'),
+            ('QG', 'Citilink'),
+            ('JT', 'Lion Air'),
+            ('ID', 'Batik Air'),
+            ('SQ', 'Singapore Airlines'),
+        ],
+    }
+
+    if role == 'staf':
+        return render(request, 'profile_staff.html', context)
+
+    return render(request, 'profile_member.html', context)
+
+def update_profile(request):
     if not request.session.get('role'):
         return redirect('accounts:login')
 
     if request.method == 'POST':
-        action = request.POST.get('action')
+        request.session['salutation'] = request.POST.get('salutation', '')
+        request.session['first_mid_name'] = request.POST.get('first_mid_name', '')
+        request.session['last_name'] = request.POST.get('last_name', '')
+        request.session['kewarganegaraan'] = request.POST.get('kewarganegaraan', '')
+        request.session['country_code'] = request.POST.get('country_code', '')
+        request.session['mobile_number'] = request.POST.get('mobile_number', '')
+        request.session['tanggal_lahir'] = request.POST.get('tanggal_lahir', '')
 
-        if action == 'update_profil':
-            # Update session dengan data baru (demo)
-            request.session['salutation'] = request.POST.get('salutation', request.session.get('salutation'))
-            request.session['first_mid_name'] = request.POST.get('first_mid_name', request.session.get('first_mid_name'))
-            request.session['last_name'] = request.POST.get('last_name', request.session.get('last_name'))
-            request.session['country_code'] = request.POST.get('country_code', request.session.get('country_code'))
-            request.session['mobile_number'] = request.POST.get('mobile_number', request.session.get('mobile_number'))
-            request.session['kewarganegaraan'] = request.POST.get('kewarganegaraan', request.session.get('kewarganegaraan'))
-            request.session['tanggal_lahir'] = request.POST.get('tanggal_lahir', request.session.get('tanggal_lahir'))
-            # Update nama display
-            request.session['nama'] = f"{request.session['first_mid_name']} {request.session['last_name']}"
-            messages.success(request, 'Profil berhasil diperbarui.')
+        if request.session.get('role') == 'staf':
+            request.session['kode_maskapai'] = request.POST.get('kode_maskapai', '')
 
-        elif action == 'update_password':
-            password_lama = request.POST.get('password_lama', '')
-            password_baru = request.POST.get('password_baru', '')
-            konfirmasi = request.POST.get('konfirmasi_password_baru', '')
+        request.session['nama'] = (
+            request.session['first_mid_name'] + ' ' + request.session['last_name']
+        )
 
-            email = request.session.get('email')
-            user = DUMMY_USERS.get(email, {})
+    return redirect('accounts:profile')
 
-            if user.get('password') != password_lama:
-                messages.error(request, 'Password lama tidak sesuai.')
-            elif password_baru != konfirmasi:
-                messages.error(request, 'Konfirmasi password baru tidak cocok.')
-            elif len(password_baru) < 8:
-                messages.error(request, 'Password baru minimal 8 karakter.')
-            else:
-                messages.success(request, 'Password berhasil diubah.')
+def update_profile_photo(request):
+    if not request.session.get('role'):
+        return redirect('accounts:login')
 
-        return redirect('accounts:profil')
-
-    MASKAPAI_CHOICES = [
-        ('GA', 'GA - Garuda Indonesia'),
-        ('QG', 'QG - Citilink'),
-        ('JT', 'JT - Lion Air'),
-        ('ID', 'ID - Batik Air'),
-        ('SQ', 'SQ - Singapore Airlines'),
-    ]
-
-    COUNTRY_CODES = [
-        ('+62', '+62 Indonesia'),
-        ('+1', '+1 USA/Canada'),
-        ('+65', '+65 Singapore'),
-        ('+60', '+60 Malaysia'),
-        ('+61', '+61 Australia'),
-        ('+44', '+44 UK'),
-        ('+81', '+81 Japan'),
-    ]
-
-    return render(request, 'accounts/profil.html', {
-        'maskapai_choices': MASKAPAI_CHOICES,
-        'country_codes': COUNTRY_CODES,
-    })
-
-def update_profile(request):
     if request.method == 'POST':
-        salutation = request.POST.get('salutation')
-        first_name = request.POST.get('first_mid_name')
-        last_name = request.POST.get('last_name')
-        country_code = request.POST.get('country_code')
-        phone = request.POST.get('mobile_number')
-        dob = request.POST.get('tanggal_lahir')
-        nationality = request.POST.get('kewarganegaraan')
-        
-        email = request.session.get('email')
-        
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                UPDATE PENGGUNA 
-                SET salutation = %s, first_mid_name = %s, last_name = %s, 
-                    country_code = %s, mobile_number = %s, tanggal_lahir = %s, kewarganegaraan = %s
-                WHERE email = %s;
-            """, [salutation, first_name, last_name, country_code, phone, dob, nationality, email])
-            
-        return redirect('accounts:profile')
+        # Sementara belum disimpan permanen ke database/media.
+        # Nanti kalau sudah pakai ImageField, baru disimpan ke folder media.
+        messages.info(request, 'Upload foto belum disambungkan ke database/media.')
 
-def profile_view(request):
+    return redirect('accounts:profile')
+
+
+def update_password(request):
     if not request.session.get('email'):
         return redirect('accounts:login')
-    
-    user = {
-        'email': request.session.get('email'),
-        'salutation': request.session.get('salutation', ''),
-    }
-    
-    return render(request, 'profile.html', {'user': user})
+
+    if request.method != 'POST':
+        return redirect('accounts:profile')
+
+    email = request.session.get('email')
+    password_lama = request.POST.get('password_lama', '')
+    password_baru = request.POST.get('password_baru', '')
+    konfirmasi_password = request.POST.get('konfirmasi_password_baru', '')
+
+    try:
+        pengguna = Pengguna.objects.get(email=email)
+    except Pengguna.DoesNotExist:
+        messages.error(request, 'Data pengguna tidak ditemukan.')
+        return redirect('accounts:profile')
+
+    if not check_password(password_lama, pengguna.password):
+        messages.error(request, 'Password lama tidak sesuai.')
+    elif password_baru != konfirmasi_password:
+        messages.error(request, 'Konfirmasi password baru tidak cocok.')
+    elif len(password_baru) < 8:
+        messages.error(request, 'Password baru minimal 8 karakter.')
+    else:
+        pengguna.password = make_password(password_baru)
+        pengguna.save()
+        messages.success(request, 'Password berhasil diubah.')
+
+    return redirect('accounts:profile')
