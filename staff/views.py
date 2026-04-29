@@ -136,8 +136,22 @@ def kelola_member_view(request):
         'tier_choices': TIER_CHOICES,
     })
 
+def dashboard(request):
+    context = {
+        'nama': 'Nisrina Alya',
+        'email': 'nisrina.alya@ui.ac.id',
+        'telepon': '+62-8137-0998-516',
+        'kewarganegaraan': 'Indonesia',
+        'tanggal_lahir': '19-09-2006',
+        'id_staff': 'MOO01',
+        'maskapai': 'Etihad',
+        'klaim_menunggu': 15,
+        'klaim_disetujui': 10,
+        'klaim_ditolak': 3,
+    }
+    return render(request, 'staff/dashboard.html', context)
 
-@login_required_staf
+# @login_required_staf
 def kelola_klaim_view(request):
     filter_status = request.GET.get('status', 'Semua')
     filter_maskapai = request.GET.get('maskapai', 'Semua')
