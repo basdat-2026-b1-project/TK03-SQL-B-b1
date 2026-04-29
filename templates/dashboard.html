@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="text-3xl font-bold text-[#0B2046] mb-6">
+    Dashboard
+</h2>
+
+<div class="bg-white p-6 rounded-lg shadow">
+    <p><strong>Nama:</strong> {{ request.session.nama }}</p>
+    <p><strong>Email:</strong> {{ request.session.email }}</p>
+    <p><strong>Role:</strong> {{ request.session.role }}</p>
+</div>
+{% endblock %}
