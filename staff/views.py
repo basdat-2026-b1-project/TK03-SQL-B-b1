@@ -214,7 +214,6 @@ def kelola_mitra_view(request):
     })
 
 
-@login_required_staf
 def laporan_view(request):
     filter_tipe = request.GET.get('tipe', 'Semua')
     active_tab = request.GET.get('tab', 'riwayat')

@@ -1,0 +1,116 @@
+{% load static %}
+{% load humanize %}
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* CSS GLOBAL LO */
+        @import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+        
+        * {
+            -webkit-font-smoothing: antialiased;
+            box-sizing: border-box;
+        }
+        html, body {
+            margin: 0px;
+            height: 100%;
+            font-family: "Inter-Regular", sans-serif; /* Default font */
+        }
+        button:focus-visible {
+            outline: 2px solid #4a90e2 !important;
+        }
+        a {
+            text-decoration: none;
+        }
+
+        /* Font Definitions */
+        @font-face {
+            font-family: "Marcellus SC-Regular";
+            src: local("Marcellus SC-Regular");
+        }
+        @font-face {
+            font-family: "Inter-Regular";
+            src: local("Inter-Regular");
+        }
+        @font-face {
+            font-family: "Inter-SemiBold";
+            src: local("Inter-SemiBold");
+        }
+
+        /* Custom Classes untuk Font Lo */
+        .font-marcellus { font-family: "Marcellus SC-Regular", serif; }
+        .font-inter { font-family: "Inter-Regular", sans-serif; }
+        .font-inter-semibold { font-family: "Inter-SemiBold", sans-serif; }
+    </style>
+    <title>Info Tier</title>
+</head>
+<body class="bg-[#F8F9FA]">
+
+    <div class="max-w-4xl mx-auto px-6 pt-24 pb-20">
+        <h1 class="text-4xl font-marcellus text-[#0A1D37] mb-8 tracking-wide">Info Tier</h1>
+
+        {% if next_tier %}
+        <div class="bg-white rounded-[24px] border border-gray-100 p-8 shadow-sm mb-10 font-inter">
+            <div class="flex justify-between items-end mb-4">
+                <div>
+                    <p class="text-sm font-inter-semibold text-[#0A1D37]">Progress ke Tier Berikutnya: <span class="text-[#A69C6D]">{{ next_tier.nama }}</span></p>
+                    <p class="text-[10px] text-gray-400 font-inter mt-1 uppercase tracking-widest">Total Miles Kumulatif</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-lg font-inter-semibold text-[#0A1D37]">{{ total_miles|intcomma }}</span>
+                    <span class="text-xs text-gray-400">/ {{ next_tier.min_miles|intcomma }}</span>
+                </div>
+            </div>
+            <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
+                <div class="bg-[#0A1D37] h-full transition-all duration-1000" style="width: {{ progress_pct }}%"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="space-y-6">
+            {% for t in tiers %}
+            <div class="relative bg-white rounded-[24px] border-2 p-8 transition-all
+                {% if t.nama == current_tier %} border-[#A69C6D] shadow-md {% else %} border-gray-50 shadow-sm {% endif %}">
+                
+                {% if t.nama == current_tier %}
+                <div class="absolute top-6 right-8 bg-[#3B82F6] text-white text-[10px] font-inter-semibold px-3 py-1 rounded-full uppercase">
+                    Tier Anda
+                </div>
+                {% endif %}
+
+                <div class="flex flex-col sm:flex-row gap-6">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0
+                        {% if t.nama == 'Blue' %} bg-blue-50 text-blue-500 
+                        {% elif t.nama == 'Silver' %} bg-gray-100 text-gray-400 
+                        {% elif t.nama == 'Gold' %} bg-[#FAF1E6] text-[#A69C6D] 
+                        {% else %} bg-[#111827] text-white {% endif %}">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z"></path></svg>
+                    </div>
+
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-marcellus text-[#0A1D37] mb-1 tracking-wider">{{ t.nama }}</h3>
+                        <p class="text-[11px] font-inter text-gray-400 mb-6 uppercase tracking-tighter">
+                            Min. {{ t.min_penerbangan }} penerbangan · Min. {{ t.min_miles|intcomma }} miles
+                        </p>
+
+                        <p class="text-sm font-inter-semibold text-[#0A1D37] mb-4">Keuntungan:</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-inter">
+                            {% for benefit in t.keuntungan %}
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                <span class="text-sm text-gray-600">{{ benefit }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

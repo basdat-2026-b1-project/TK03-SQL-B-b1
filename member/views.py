@@ -174,7 +174,7 @@ def transfer_view(request):
     })
 
 
-@login_required_member
+#@login_required_member
 def redeem_view(request):
     active_tab = request.GET.get('tab', 'katalog')
 
@@ -223,7 +223,7 @@ def dashboard(request):
     }
     return render(request, 'member/dashboard.html', context)
 
-@login_required_member
+#@login_required_member
 def package_view(request):
     if request.method == 'POST':
         pkg_id = request.POST.get('package_id')
@@ -237,7 +237,7 @@ def package_view(request):
     })
 
 
-@login_required_member
+#@login_required_member
 def info_tier_view(request):
     current_tier = request.session.get('tier', 'Blue')
     total_miles = request.session.get('total_miles', 0)

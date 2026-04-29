@@ -1,0 +1,179 @@
+{% load static %}
+{% load humanize %}
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'globals.css' %}">
+    <title>Laporan Staff - FE Demo</title>
+    <style>
+        .tab-active { background: white !important; color: #111827 !important; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .action-btn { transition: all 0.2s; color: #6b7280; }
+        .action-btn:hover { color: #ef4444; transform: scale(1.1); }
+        
+        /* Animasi Modal */
+        #modalHapus.hidden { display: none; }
+        #modalHapus:not(.hidden) { display: flex; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans">
+
+    <div class="max-w-7xl mx-auto px-6 md:px-10 pt-24 pb-10">
+        
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Laporan & Riwayat Transaksi</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-center border-b-4 border-b-gray-200">
+                <p class="text-[10px] font-extrabold text-gray-400 tracking-widest uppercase mb-1">Total Miles Beredar</p>
+                <div class="flex items-center gap-3">
+                    <img src="{% static 'img/image-18.png' %}" class="w-7 h-7" alt="miles">
+                    <span class="text-2xl font-bold">27,500</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-center border-b-4 border-b-gray-200">
+                <p class="text-[10px] font-extrabold text-gray-400 tracking-widest uppercase mb-1">Total Redeem Bulan Ini</p>
+                <div class="flex items-center gap-3">
+                    <img src="{% static 'img/image-19.png' %}" class="w-7 h-7" alt="redeem">
+                    <span class="text-2xl font-bold">3,000</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-center border-b-4 border-b-gray-200">
+                <p class="text-[10px] font-extrabold text-gray-400 tracking-widest uppercase mb-1">Total Klaim Disetujui</p>
+                <span class="text-2xl font-bold block ml-1 mt-1">2,500</span>
+            </div>
+        </div>
+
+        <div class="inline-flex bg-gray-200 p-1 rounded-xl mb-8">
+            <button onclick="switchTab('riwayat')" id="btn-riwayat" 
+                class="px-6 py-2 text-xs font-bold transition-all text-gray-500">
+                Riwayat Transaksi
+            </button>
+            <button onclick="switchTab('top')" id="btn-top" 
+                class="px-6 py-2 text-xs font-bold transition-all tab-active text-gray-900">
+                Top Members
+            </button>
+        </div>
+
+        <div id="section-riwayat" class="hidden">
+    <div class="mb-6 flex justify-start">
+        <div class="relative inline-block w-48">
+            <select class="block w-full bg-white border border-gray-200 text-gray-700 py-2.5 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm shadow-sm appearance-none cursor-pointer">
+                <option>Semua Tipe</option>
+                <option>Tipe</option>
+                <option>Member</option>
+                <option>Waktu</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+        <table class="w-full text-left border-collapse text-sm">
+            <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                <tr>
+                    <th class="px-6 py-4">Tipe</th>
+                    <th class="px-6 py-4">Member</th>
+                    <th class="px-6 py-4">Miles</th>
+                    <th class="px-6 py-4">Waktu</th>
+                    <th class="px-6 py-4 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                <span class="px-3 py-1 bg-gray-50 border border-gray-100 rounded-lg text-[10px] font-bold text-gray-600">Transfer</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-gray-900 leading-none">John W. Doe</div>
+                            <div class="text-[10px] text-gray-400 font-normal italic mt-1">john@example.com</div>
+                        </td>
+                        <td class="px-6 py-4 font-bold text-red-500">-5,000</td>
+                        <td class="px-6 py-4 text-gray-400 text-xs font-medium">2025-01-15 10:30</td>
+                        <td class="px-6 py-4 text-center">
+                            <button onclick="bukaModalHapus('John W. Doe')" class="action-btn">
+                                <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+        <div id="section-top">
+            <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                        <tr>
+                            <th class="px-8 py-5">#</th>
+                            <th class="px-6 py-5">Members</th>
+                            <th class="px-6 py-5">Total Miles</th>
+                            <th class="px-6 py-5">Jumlah Transaksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-8 py-5 font-bold">1</td>
+                            <td class="px-6 py-5 font-bold">John W Doe</td>
+                            <td class="px-6 py-5 font-bold">18,000</td>
+                            <td class="px-6 py-5 font-bold">3</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalHapus" class="fixed inset-0 bg-gray-900/60 z-[9999] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl overflow-hidden">
+            <h2 class="text-xl font-bold text-gray-900 mb-3">Hapus Riwayat Transaksi</h2>
+            <p class="text-gray-500 text-sm mb-8 leading-relaxed text-left">
+                Penghapusan riwayat transaksi bersifat permanen dan tidak dapat dibatalkan.
+            </p>
+
+            <div class="flex justify-end gap-3">
+                <button onclick="tutupModalHapus()" class="px-6 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-bold text-xs hover:bg-gray-50">
+                    Batal
+                </button>
+                <button onclick="tutupModalHapus(); alert('Dihapus!');" class="px-6 py-2.5 rounded-xl bg-[#2D2D2D] text-white font-bold text-xs hover:bg-black transition-colors">
+                    Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            const riwayat = document.getElementById('section-riwayat');
+            const top = document.getElementById('section-top');
+            const btnR = document.getElementById('btn-riwayat');
+            const btnT = document.getElementById('btn-top');
+            if(tab === 'riwayat') {
+                riwayat.classList.remove('hidden'); top.classList.add('hidden');
+                btnR.classList.add('tab-active'); btnT.classList.remove('tab-active');
+            } else {
+                riwayat.classList.add('hidden'); top.classList.remove('hidden');
+                btnT.classList.add('tab-active'); btnR.classList.remove('tab-active');
+            }
+        }
+
+        function bukaModalHapus(name) {
+            document.getElementById('modalHapus').classList.remove('hidden');
+        }
+
+        function tutupModalHapus() {
+            document.getElementById('modalHapus').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
