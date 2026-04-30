@@ -209,6 +209,16 @@
 
 {% block extra_js %}
 <script>
+    // Tambahkan fungsi toggleModal di sini
+    function toggleModal(modalID) {
+        const modal = document.getElementById(modalID);
+        if (modal.classList.contains('hidden')) {
+            modal.classList.remove('hidden');
+        } else {
+            modal.classList.add('hidden');
+        }
+    }
+
     function openEditModal(kode, nama, penyedia, miles, deskripsi, start, end) {
         document.getElementById('edit_kode').value = kode;
         document.getElementById('edit_nama').value = nama;
