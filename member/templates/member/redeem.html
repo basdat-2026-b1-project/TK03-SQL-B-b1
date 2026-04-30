@@ -16,15 +16,6 @@
         </p>
     </div>
 
-    <!-- Alert Messages -->
-    {% if messages %}
-        {% for message in messages %}
-            <div class="mb-6 p-4 rounded-xl {% if message.tags == 'error' %}bg-red-50 text-red-700 border-red-100{% else %}bg-green-50 text-green-700 border-green-100{% endif %} border font-inter-semibold text-xs">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-
     <!-- Tab Navigation -->
     <div class="inline-flex bg-[#E2E4E7] p-1 rounded-xl mb-10 font-inter-semibold text-[11px]">
         <button onclick="switchTab('katalog')" id="btn-katalog" 

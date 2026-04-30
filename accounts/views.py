@@ -130,7 +130,6 @@ def register_view(request):
 
 def logout_view(request):
     request.session.flush()
-    messages.info(request, 'Anda telah logout.')
     return redirect('accounts:login')
 
 
