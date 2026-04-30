@@ -1,29 +1,11 @@
+{% extends "base.html" %}
 {% load static %}
 {% load humanize %}
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
-        * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
-        
-        @font-face { font-family: "Marcellus SC-Regular"; src: local("Marcellus SC-Regular"); }
-        @font-face { font-family: "Inter-Regular"; src: local("Inter-Regular"); }
-        @font-face { font-family: "Inter-SemiBold"; src: local("Inter-SemiBold"); }
-        
-        body { font-family: "Inter-Regular", sans-serif; background-color: #F8F9FA; }
-        .font-marcellus { font-family: "Marcellus SC-Regular", serif; }
-        .font-inter-semibold { font-family: "Inter-SemiBold", sans-serif; }
-    </style>
-    <title>Beli Award Miles Package</title>
-</head>
-<body class="pt-24 pb-10">
+{% block title %}Judul Halaman Sesuai File{% endblock %}
 
-    <div class="max-w-7xl mx-auto px-6">
+{% block content %}
+    <div class="max-w-7xl mx-auto px-6 md:px-10 pt-10 pb-10"> </div>
         <div class="mb-10 text-center sm:text-left">
             <h1 class="text-4xl font-marcellus text-[#0A1D37] tracking-wider">Beli Award Miles Package</h1>
             <p class="text-gray-500 font-inter-semibold mt-2 text-xs uppercase tracking-[0.2em]">
@@ -103,7 +85,8 @@
             </form>
         </div>
     </div>
-
+{% endblock content %}
+{% block extra_js %}
     <script>
         function bukaModalBeli(id, miles, harga) {
             document.getElementById('input_package_id').value = id;
@@ -118,5 +101,6 @@
             document.body.style.overflow = 'auto'; // Unlock scroll
         }
     </script>
+{% endblock extra_js %}
 </body>
 </html>
