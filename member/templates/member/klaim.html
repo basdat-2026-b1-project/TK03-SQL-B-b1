@@ -1,8 +1,10 @@
+{% extends "base.html" %}
 {% load static %}
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-<div class="bg-white min-h-screen font-sans p-10">
+{% block title %}Judul Halamannya - AeroMiles{% endblock %}
+
+{% block content %}
+<div class="bg-white h-full font-sans p-10">
     <div class="max-w-[1240px] mx-auto">
         
         <div class="mb-10">
@@ -194,7 +196,8 @@
         </form>
     </div>
 </div>
-
+{%endblock content %}
+{%block extra_js %}
 <script>
     const modal = document.getElementById('modal-form');
     const deleteModal = document.getElementById('modal-delete');
@@ -245,3 +248,4 @@
         if (event.target == deleteModal) closeDeleteModal();
     }
 </script>
+{% endblock extra_js %}

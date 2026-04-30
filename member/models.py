@@ -9,14 +9,15 @@ class Bandara(models.Model):
 
     class Meta:
         db_table = 'BANDARA'
+        managed = False
 
 class Maskapai(models.Model):
     kode_maskapai = models.CharField(max_length=10, primary_key=True)
     nama_maskapai = models.CharField(max_length=100)
-    # id_penyedia bisa dikerjakan temanmu nanti jika belum perlu CRUD ini
     
     class Meta:
         db_table = 'MASKAPAI'
+        managed = False
 
 class ClaimMissingMiles(models.Model):
     id = models.AutoField(primary_key=True)
@@ -28,17 +29,17 @@ class ClaimMissingMiles(models.Model):
     tanggal_penerbangan = models.DateField()
     flight_number = models.CharField(max_length=10)
     nomor_tiket = models.CharField(max_length=20)
-    kelas_kabin = models.CharField(max_length=20) # 'Economy', 'Business', 'First'
+    kelas_kabin = models.CharField(max_length=20)
     pnr = models.CharField(max_length=10)
     status_penerimaan = models.CharField(max_length=20, default='Menunggu')
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'CLAIM_MISSING_MILES'
+        managed = False
         unique_together = ('email_member', 'flight_number', 'tanggal_penerbangan', 'nomor_tiket')
 
 class Transfer(models.Model):
-    # Field diletakkan langsung di bawah class Model
     email_member_1 = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='transfer_keluar', db_column='email_member_1')
     email_member_2 = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='transfer_masuk', db_column='email_member_2')
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -47,5 +48,5 @@ class Transfer(models.Model):
 
     class Meta:
         db_table = 'TRANSFER'
-        # Hanya Meta option (seperti unique_together) yang ada di sini
+        managed = False
         unique_together = (('email_member_1', 'email_member_2', 'timestamp'),)

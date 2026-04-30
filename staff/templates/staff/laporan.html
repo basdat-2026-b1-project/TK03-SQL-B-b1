@@ -1,23 +1,10 @@
+{% extends "base.html" %}
 {% load static %}
 {% load humanize %}
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'globals.css' %}">
-    <title>Laporan Staff - FE Demo</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .tab-active { background: white !important; color: #111827 !important; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .action-btn { transition: all 0.2s; color: #6b7280; }
-        .action-btn:hover { color: #ef4444; transform: scale(1.1); }
-    </style>
-</head>
-<body class="bg-slate-50">
+{% block title %}Judul Halaman Sesuai File{% endblock %}
+
+{% block content %}
 
     <div class="max-w-7xl mx-auto px-6 md:px-10 pt-24 pb-10">
         
@@ -160,6 +147,10 @@
         </div>
     </div>
 
+{% endblock content %}
+
+{% block extra_js %}
+
     <script>
         function switchTab(tab) {
             const riwayat = document.getElementById('section-riwayat');
@@ -188,5 +179,4 @@
             document.getElementById('modalHapus').classList.add('hidden');
         }
     </script>
-</body>
-</html>
+{% endblock extra_js %}

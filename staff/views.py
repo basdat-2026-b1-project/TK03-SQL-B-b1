@@ -1,9 +1,11 @@
+from datetime import datetime
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
-
-# ====================================================
-# DUMMY DATA untuk fitur staf
-# ====================================================
+from django.db import connection
+from django.contrib.auth.hashers import make_password
+from datetime import date
+from django.core.paginator import Paginator
 
 DUMMY_MEMBERS = [
     {'nomor': 'M0001', 'nama': 'Mr. John William Doe', 'email': 'john@example.com',
@@ -92,9 +94,6 @@ DUMMY_TOP_MEMBERS = [
 
 TIER_CHOICES = ['Blue', 'Silver', 'Gold', 'Platinum']
 
-# ====================================================
-
-
 def login_required_staf(view_func):
     def wrapper(request, *args, **kwargs):
         if not request.session.get('role'):
@@ -112,25 +111,65 @@ def kelola_member_view(request):
 
     if request.method == 'POST':
         action = request.POST.get('action')
+
         if action == 'tambah':
+            new_member = {
+                'nomor': f"M{len(DUMMY_MEMBERS) + 1:04d}",
+                'nama': f"{request.POST.get('salutation')} {request.POST.get('first_mid_name')} {request.POST.get('last_name')}",
+                'email': request.POST.get('email'),
+                'tier': request.POST.get('tier', 'Blue'),
+                'total_miles': 0,
+                'award_miles': 0,
+                'bergabung': date.today().strftime('%Y-%m-%d'),
+            }
+            DUMMY_MEMBERS.append(new_member)
             messages.success(request, 'Member baru berhasil ditambahkan.')
+
         elif action == 'edit':
-            messages.success(request, 'Data member berhasil diperbarui.')
+            email = request.POST.get('email')
+
+            for m in DUMMY_MEMBERS:
+                if m['email'] == email:
+                    m['nama'] = request.POST.get('nama')
+                    m['tier'] = request.POST.get('tier')
+                    m['total_miles'] = int(request.POST.get('total_miles', 0))
+                    m['award_miles'] = int(request.POST.get('award_miles', 0))
+                    break
+
+            messages.success(request, f'Data member {email} berhasil diperbarui.')
+
         elif action == 'hapus':
-            messages.success(request, 'Member berhasil dihapus beserta seluruh data terkait.')
+            email = request.POST.get('email')
+
+            for m in DUMMY_MEMBERS:
+                if m['email'] == email:
+                    DUMMY_MEMBERS.remove(m)
+                    break
+
+            messages.success(request, f'Member {email} berhasil dihapus.')
+
         return redirect('staff:kelola_member')
 
     members = DUMMY_MEMBERS
+
     if search:
-        members = [m for m in members if
-                   search.lower() in m['nama'].lower() or
-                   search.lower() in m['email'].lower() or
-                   search.lower() in m['nomor'].lower()]
+        members = [
+            m for m in members
+            if search.lower() in m['nama'].lower()
+            or search.lower() in m['email'].lower()
+            or search.lower() in m['nomor'].lower()
+        ]
+
     if filter_tier != 'Semua':
         members = [m for m in members if m['tier'] == filter_tier]
 
+    paginator = Paginator(members, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'staff/kelola_member.html', {
-        'members': members,
+        'members': page_obj,
+        'page_obj': page_obj,
         'search': search,
         'filter_tier': filter_tier,
         'tier_choices': TIER_CHOICES,
@@ -151,7 +190,6 @@ def dashboard(request):
     }
     return render(request, 'staff/dashboard.html', context)
 
-# @login_required_staf
 def kelola_klaim_view(request):
     filter_status = request.GET.get('status', 'Semua')
     filter_maskapai = request.GET.get('maskapai', 'Semua')
@@ -178,40 +216,137 @@ def kelola_klaim_view(request):
         'maskapai_list': ['GA', 'QG', 'JT', 'SQ', 'MH'],
     })
 
-
 @login_required_staf
 def kelola_hadiah_view(request):
     if request.method == 'POST':
         action = request.POST.get('action')
+        kode = request.POST.get('kode_hadiah')
+
         if action == 'tambah':
-            messages.success(request, 'Hadiah baru berhasil ditambahkan.')
+            # Generate Kode Otomatis
+            new_kode = f"RWD-00{len(DUMMY_HADIAH_STAF) + 1}"
+            
+            # Gabungkan start dan end menjadi format 'periode'
+            start = request.POST.get('valid_start')
+            end = request.POST.get('program_end')
+            periode_str = f"{start} — {end}"
+            
+            DUMMY_HADIAH_STAF.append({
+                'kode': new_kode,
+                'nama': request.POST.get('nama_reward'),
+                'miles': int(request.POST.get('miles')),
+                'deskripsi': request.POST.get('deskripsi'),
+                'periode': periode_str, # Simpan dalam format dummy asli
+                'penyedia': request.POST.get('penyedia_name'), 
+                'tipe_penyedia': 'partner', # default simulasi
+                'aktif': True
+            })
+            messages.success(request, f'Hadiah berhasil ditambah dengan kode {new_kode}.')
+
         elif action == 'edit':
-            messages.success(request, 'Hadiah berhasil diperbarui.')
+            # Kode Hadiah tidak dapat diubah
+            for h in DUMMY_HADIAH_STAF:
+                if h['kode'] == kode:
+                    h['nama'] = request.POST.get('nama_reward')
+                    h['miles'] = int(request.POST.get('miles'))
+                    h['penyedia'] = request.POST.get('penyedia_name')
+                    h['deskripsi'] = request.POST.get('deskripsi')
+                    
+                    # Gabungkan start dan end kembali
+                    start = request.POST.get('valid_start')
+                    end = request.POST.get('program_end')
+                    h['periode'] = f"{start} — {end}"
+            messages.success(request, 'Detail hadiah berhasil diperbarui.')
+
         elif action == 'hapus':
-            messages.success(request, 'Hadiah berhasil dihapus.')
-        return redirect('staff:kelola_hadiah')
+            # hanya bisa hapus kalau periode sudah selesai (aktif=False)
+            hadiah = next((h for h in DUMMY_HADIAH_STAF if h['kode'] == kode), None)
+            if hadiah and not hadiah['aktif']:
+                for i, h in enumerate(DUMMY_HADIAH_STAF):
+                    if h['kode'] == kode:
+                        DUMMY_HADIAH_STAF.pop(i)
+                        break
+                messages.success(request, 'Hadiah yang sudah tidak berlaku berhasil dihapus.')
+            else:
+                messages.error(request, 'Gagal! Hadiah masih aktif dan tidak dapat dihapus.')
+
+        return redirect('staff:kelola_hadiah') # Typo 'ke1lola_hadiah' sudah diperbaiki
+    
+    today = datetime.now().date()
+    for h in DUMMY_HADIAH_STAF:
+        if 'periode' in h:
+            try:
+                # memecah string '2024-01-01 — 2025-12-31' menjadi dua bagian
+                parts = h['periode'].replace(' - ', ' — ').split(' — ')
+                if len(parts) == 2:
+                    start_str = parts[0].strip()
+                    end_str = parts[1].strip()
+                    
+                    h['valid_start'] = start_str
+                    h['program_end'] = end_str
+                    
+                    # Cek aktif/selesai berdasarkan tanggal end
+                    end_date = datetime.strptime(end_str, '%Y-%m-%d').date()
+                    h['aktif'] = end_date >= today
+            except Exception as e:
+                pass # Abaikan jika ada format tanggal yang aneh dari dummy
 
     return render(request, 'staff/kelola_hadiah.html', {
         'hadiah_list': DUMMY_HADIAH_STAF,
         'penyedia_choices': PENYEDIA_CHOICES,
     })
 
-
 @login_required_staf
 def kelola_mitra_view(request):
     if request.method == 'POST':
         action = request.POST.get('action')
+        email = request.POST.get('email_mitra')
+
         if action == 'tambah':
-            messages.success(request, 'Mitra baru berhasil didaftarkan. Entri PENYEDIA otomatis dibuat.')
+            # Logika: Otomatis buat entri PENYEDIA baru (Simulasi ID)
+            new_id = len(DUMMY_MITRA) + 5
+            DUMMY_MITRA.append({
+                'email': email,
+                'id_penyedia': new_id,
+                'nama': request.POST.get('nama_mitra'),
+                'tanggal': request.POST.get('tanggal_kerja_sama'),
+            })
+            messages.success(request, f'Mitra baru berhasil didaftarkan!')
+
         elif action == 'edit':
+            # update data kecuali Email (PK) dan ID Penyedia
+            for m in DUMMY_MITRA:
+                if m['email'] == email:
+                    m['nama'] = request.POST.get('nama_mitra')
+                    m['tanggal'] = request.POST.get('tanggal_kerja_sama')
             messages.success(request, 'Informasi mitra berhasil diperbarui.')
+
         elif action == 'hapus':
-            messages.warning(request, 'Mitra berhasil dihapus beserta hadiah yang disediakan.')
+            email_hapus = request.POST.get('email_mitra')
+            
+            # cari nama mitra yang akan dihapus 
+            nama_mitra = None
+            for m in DUMMY_MITRA:
+                if m['email'] == email_hapus:
+                    nama_mitra = m['nama']
+                    break
+            
+            # hapus Mitra dari daftar
+            for i, m in enumerate(DUMMY_MITRA):
+                if m['email'] == email_hapus:
+                    DUMMY_MITRA.pop(i)
+                    break
+            
+            # hapus Hadiah yang dimiliki oleh Mitra tersebut (jika ada)
+            if nama_mitra:
+                global DUMMY_HADIAH_STAF
+                DUMMY_HADIAH_STAF = [h for h in DUMMY_HADIAH_STAF if h.get('penyedia') != nama_mitra]
+
+            messages.warning(request, 'Mitra dan seluruh hadiah terkait berhasil dihapus.')
+
         return redirect('staff:kelola_mitra')
 
-    return render(request, 'staff/kelola_mitra.html', {
-        'mitra_list': DUMMY_MITRA,
-    })
+    return render(request, 'staff/kelola_mitra.html', {'mitra_list': DUMMY_MITRA})
 
 
 def laporan_view(request):
