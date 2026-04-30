@@ -1,30 +1,23 @@
-/* style.css */
-
 :root {
-  /* Palet Utama AeroMiles (Pilihanmu) */
   --primary: #0B3C5D;
   --accent: #00A8E8;
   --background: #F5F7FA;
   --text: #1F2937;
 
-  /* Warna Status Tambahan (Tetap dibutuhkan untuk Alert/Pesan Error) */
-  --success: #10B981; /* Hijau pastel modern */
-  --danger: #EF4444;  /* Merah pastel modern */
+  --success: #10B981;
+  --danger: #EF4444;
 }
 
-/* Mengubah warna dasar halaman */
 body {
   background-color: var(--background);
   color: var(--text);
   font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* Class khusus untuk Navbar atau Header */
 .bg-aero-primary {
   background-color: var(--primary) !important;
 }
 
-/* Class khusus untuk Tombol Utama */
 .btn-aero-accent {
   background-color: var(--accent);
   color: #ffffff;
@@ -33,9 +26,8 @@ body {
   transition: all 0.2s ease-in-out;
 }
 
-/* Efek saat tombol disorot mouse */
 .btn-aero-accent:hover {
-  background-color: #008ac0; /* Warna accent sedikit digelapkan */
+  background-color: #008ac0;
   color: #ffffff;
-  transform: translateY(-1px); /* Efek tombol sedikit terangkat */
+  transform: translateY(-1px);
 }

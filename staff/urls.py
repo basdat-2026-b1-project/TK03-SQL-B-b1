@@ -9,4 +9,5 @@ urlpatterns = [
     path('kelola-hadiah/', views.kelola_hadiah_view, name='kelola_hadiah'),
     path('kelola-mitra/', views.kelola_mitra_view, name='kelola_mitra'),
     path('laporan/', views.laporan_view, name='laporan'),
+    path('dashboard/', views.dashboard, name='staff-dashboard'),
 ]
