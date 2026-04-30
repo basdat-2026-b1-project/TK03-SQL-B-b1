@@ -16,12 +16,15 @@
   </style>
 </head>
 
-<body class="font-inter text-black min-h-screen">
+<body class="font-inter text-black min-h-screen flex flex-col bg-[#F8F9FA]">
+  
   {% include 'navbar.html' %}
 
-  <main>
+  <main class="flex-grow w-full">
     {% block content %}{% endblock %}
   </main>
+
+  {% include 'footer.html' %}
 
   {% block extra_js %}{% endblock %}
 </body>
