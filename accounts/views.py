@@ -55,8 +55,12 @@ def landing_page(request):
     return render(request, 'base.html')
 
 def login_view(request):
+    # cek jika user sudah login sebelumnya
     if request.session.get('role'):
-        return redirect('accounts:dashboard')
+        if request.session.get('role') == 'member':
+            return redirect('/member/dashboard/') # sesuaikan dengan nama path urls.py per role, misal: redirect('member:dashboard')
+        elif request.session.get('role') == 'staf':
+            return redirect('/staff/dashboard/')
 
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
@@ -74,7 +78,12 @@ def login_view(request):
                 if k != 'password':
                     request.session[k] = v
             messages.success(request, f"Selamat datang, {user['salutation']} {user['nama']}!")
-            return redirect('accounts:dashboard')
+            
+            # 2. Ubah bagian redirect setelah POST login berhasil
+            if user['role'] == 'member':
+                return redirect('/member/dashboard/') 
+            elif user['role'] == 'staf':
+                return redirect('/staff/dashboard/')
         else:
             messages.error(request, 'Email atau password salah. Silakan coba lagi.')
 
