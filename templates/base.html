@@ -21,11 +21,72 @@
   {% include 'navbar.html' %}
 
   <main class="flex-grow w-full">
+    
     {% block content %}{% endblock %}
   </main>
 
   {% include 'footer.html' %}
 
   {% block extra_js %}{% endblock %}
+  {% if messages %}
+<div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3">
+    {% for message in messages %}
+        <div
+            class="toast-message opacity-0 translate-x-5 transition-all duration-300 ease-out
+                   min-w-[280px] max-w-sm px-4 py-3 rounded-xl shadow-lg border
+                   flex items-start gap-3
+                   {% if message.tags == 'success' %}
+                       bg-green-100 text-green-800 border-green-200
+                   {% elif message.tags == 'error' %}
+                       bg-red-100 text-red-800 border-red-200
+                   {% elif message.tags == 'warning' %}
+                       bg-yellow-100 text-yellow-800 border-yellow-200
+                   {% else %}
+                       bg-blue-100 text-blue-800 border-blue-200
+                   {% endif %}"
+            role="alert"
+        >
+            <div class="flex-1">
+                {{ message }}
+            </div>
+
+            <button
+                type="button"
+                class="toast-close ml-2 font-bold text-lg leading-none opacity-70 hover:opacity-100"
+            >
+                &times;
+            </button>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toasts = document.querySelectorAll(".toast-message");
+
+        toasts.forEach((toast, index) => {
+            setTimeout(() => {
+                toast.classList.remove("opacity-0", "translate-x-5");
+                toast.classList.add("opacity-100", "translate-x-0");
+            }, 100 + index * 150);
+
+            const closeButton = toast.querySelector(".toast-close");
+
+            const closeToast = () => {
+                toast.classList.remove("opacity-100", "translate-x-0");
+                toast.classList.add("opacity-0", "translate-x-5");
+
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            };
+
+            closeButton.addEventListener("click", closeToast);
+
+            setTimeout(closeToast, 4000 + index * 700);
+        });
+    });
+</script>
+{% endif %}
 </body>
 </html>
