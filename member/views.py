@@ -247,7 +247,8 @@ def transfer_view(request):
         'email_session': member_dummy['email_pengguna']
     })
 
-@login_required_member
+
+login_required_member
 def redeem_view(request):
     active_tab = request.GET.get('tab', 'katalog')
 
