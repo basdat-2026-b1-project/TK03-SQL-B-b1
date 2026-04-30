@@ -7,6 +7,8 @@ from django.contrib.auth.hashers import make_password
 from datetime import date
 from django.core.paginator import Paginator
 
+from member.views import login_required_member
+
 DUMMY_MEMBERS = [
     {'nomor': 'M0001', 'nama': 'Mr. John William Doe', 'email': 'john@example.com',
      'tier': 'Gold', 'total_miles': 45000, 'award_miles': 32000, 'bergabung': '2024-01-15'},
@@ -175,18 +177,30 @@ def kelola_member_view(request):
         'tier_choices': TIER_CHOICES,
     })
 
+@login_required_staf
 def dashboard(request):
+    # Mengambil data dinamis dari session user yang sedang login
+    # Gunakan .get() dan nilai default agar tidak error jika session kosong
     context = {
-        'nama': 'Nisrina Alya',
-        'email': 'nisrina.alya@ui.ac.id',
-        'telepon': '+62-8137-0998-516',
-        'kewarganegaraan': 'Indonesia',
-        'tanggal_lahir': '19-09-2006',
-        'id_staff': 'MOO01',
-        'maskapai': 'Etihad',
-        'klaim_menunggu': 15,
-        'klaim_disetujui': 10,
-        'klaim_ditolak': 3,
+        'nama': request.session.get('nama', 'Nama Belum Diatur'),
+        'email': request.session.get('email', 'Email Belum Diatur'),
+        'telepon': request.session.get('mobile_number', '-'), 
+        'kewarganegaraan': request.session.get('kewarganegaraan', 'Indonesia'),
+        'tanggal_lahir': request.session.get('tanggal_lahir', '-'),
+
+        # Stat Cards
+        'nomor_member': request.session.get('nomor_member', 'Belum Ada'),
+        'tier': request.session.get('tier', 'BLUE'),
+        'total_miles': request.session.get('total_miles', 0),
+        'award_miles': request.session.get('award_miles', 0),
+
+        'transaksi': [
+            {'tipe': 'Transfer', 'tanggal': '2026-04-26 10:31:20', 'miles': -1000},
+            {'tipe': 'Redeem',   'tanggal': '2026-04-26 10:31:20', 'miles': -10000},
+            {'tipe': 'Package',  'tanggal': '2026-04-26 10:31:20', 'miles': +16000},
+            {'tipe': 'Package',  'tanggal': '2026-04-26 10:31:20', 'miles': +16000},
+            {'tipe': 'Redeem',   'tanggal': '2026-04-26 10:31:20', 'miles': -10000},
+        ],
     }
     return render(request, 'staff/dashboard.html', context)
 

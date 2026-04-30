@@ -268,22 +268,24 @@ def redeem_view(request):
         'active_tab': active_tab,
     })
 
+@login_required_member
 def dashboard(request):
-    # Nanti diganti dengan real query DB
+    # Mengambil data dinamis dari session user yang sedang login
+    # Gunakan .get() dan nilai default agar tidak error jika session kosong
     context = {
-        'nama': 'Nisrina Alya',
-        'email': 'nisrina.alya@ui.ac.id',
-        'telepon': '+62-8137-0998-516',
-        'kewarganegaraan': 'Indonesia',
-        'tanggal_lahir': '19-09-2006',
+        'nama': request.session.get('nama', 'Nama Belum Diatur'),
+        'email': request.session.get('email', 'Email Belum Diatur'),
+        'telepon': request.session.get('mobile_number', '-'), 
+        'kewarganegaraan': request.session.get('kewarganegaraan', 'Indonesia'),
+        'tanggal_lahir': request.session.get('tanggal_lahir', '-'),
 
         # Stat Cards
-        'nomor_member': 'MOO01',
-        'tier': 'GOLD',
-        'total_miles': 45000,
-        'award_miles': 32000,
+        'nomor_member': request.session.get('nomor_member', 'Belum Ada'),
+        'tier': request.session.get('tier', 'BLUE'),
+        'total_miles': request.session.get('total_miles', 0),
+        'award_miles': request.session.get('award_miles', 0),
 
-        # 5 Transaksi Terbaru
+        # latest transaction (dummy) -> To Be Updated
         'transaksi': [
             {'tipe': 'Transfer', 'tanggal': '2026-04-26 10:31:20', 'miles': -1000},
             {'tipe': 'Redeem',   'tanggal': '2026-04-26 10:31:20', 'miles': -10000},
